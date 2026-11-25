@@ -12,3 +12,27 @@ session_*
 PokemonRed.gb.state
 venv*
 .python-version
+
+# Local training artifacts
+/v2/runs/
+/checkpoints/
+
+# Game ROMs
+*.gb
+*.gbc
+*.gba
+
+# Python environments and cache
+.venv/
+__pycache__/
+*.pyc
+
+# Generated RAG artifacts
+/pokemon_rag/data/raw/
+/pokemon_rag/rag_data/
+*.index
+
+# Credentials
+.env
+.env.*
+!.env.example

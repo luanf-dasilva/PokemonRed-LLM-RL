@@ -1,0 +1,383 @@
+{
+  "model": "qwen3.5:4b-q4_K_M",
+  "model_info": {
+    "name": "qwen3.5:4b-q4_K_M",
+    "model": "qwen3.5:4b-q4_K_M",
+    "modified_at": "2026-11-23T10:37:05.869777383-05:00",
+    "size": 3324173934,
+    "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "details": {
+      "parent_model": "model.gguf",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "4.2B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "runner": "llamacpp"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  "objective": "Obtain the Boulder Badge",
+  "repetitions": 5,
+  "seed": 0,
+  "cases": [
+    {
+      "id": "P01",
+      "state": {
+        "location": "Pallet Town",
+        "party_size": 0,
+        "party_levels": [],
+        "hp_fraction": 1.0,
+        "has_starter": false,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Obtain a starter from Professor Oak; reaching Oak or his lab is an acceptable prerequisite."
+    },
+    {
+      "id": "P02",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Visit Viridian Poké Mart and obtain Oak's Parcel."
+    },
+    {
+      "id": "P03",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": true,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Return toward Pallet Town and deliver Oak's Parcel to Professor Oak."
+    },
+    {
+      "id": "P04",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress north toward Route 2 or Viridian Forest; a sensible immediate preparation may also be acceptable."
+    },
+    {
+      "id": "P05",
+      "state": {
+        "location": "Route 2",
+        "party_size": 1,
+        "party_levels": [
+          8
+        ],
+        "hp_fraction": 0.9,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress toward or enter Viridian Forest."
+    },
+    {
+      "id": "P06",
+      "state": {
+        "location": "Viridian Forest",
+        "party_size": 2,
+        "party_levels": [
+          10,
+          6
+        ],
+        "hp_fraction": 0.9,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Traverse or exit Viridian Forest toward Pewter City; do not assume a location inside the forest."
+    },
+    {
+      "id": "P07",
+      "state": {
+        "location": "Pewter City",
+        "party_size": 1,
+        "party_levels": [
+          10
+        ],
+        "hp_fraction": 0.15,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Consider healing at the Pokémon Center before challenging Brock; grade alternatives with attention to low health."
+    },
+    {
+      "id": "P08",
+      "state": {
+        "location": "Pewter City",
+        "party_size": 1,
+        "party_levels": [
+          13
+        ],
+        "starter_species": "Squirtle",
+        "hp_fraction": 1.0,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress toward Pewter Gym or challenge Brock; the given Squirtle and health indicate reasonable preparation."
+    }
+  ],
+  "case_file_sha256": "facdf194dffd6577fbbd14ca694defe1cfd109e2d2497695aa76dc0da9e56c6e",
+  "context_retrieval_seconds": {
+    "P01-top4": 0.15703598299296573,
+    "P01-top8": 0.020148736002738588,
+    "P01-multi": 0.017991248008911498,
+    "P01-state_last": 2.90005118586123e-07,
+    "P01-history": 1.6899139154702425e-07,
+    "P02-top4": 0.020559907003189437,
+    "P02-top8": 0.02002689999062568,
+    "P02-multi": 0.01737537900044117,
+    "P02-state_last": 2.849992597475648e-07,
+    "P02-history": 2.820015652105212e-07,
+    "P03-top4": 0.01975905599829275,
+    "P03-top8": 0.01939131699327845,
+    "P03-multi": 0.016471854003611952,
+    "P03-state_last": 2.579909050837159e-07,
+    "P03-history": 1.4599936548620462e-07,
+    "P04-top4": 0.019209178994060494,
+    "P04-top8": 0.019862651999574155,
+    "P04-multi": 0.01725666799757164,
+    "P04-state_last": 2.7799978852272034e-07,
+    "P04-history": 1.500011421740055e-07,
+    "P05-top4": 0.01948144199559465,
+    "P05-top8": 0.019153778004692867,
+    "P05-multi": 0.01698372099781409,
+    "P05-state_last": 3.3699325285851955e-07,
+    "P05-history": 1.4800752978771925e-07,
+    "P06-top4": 0.020258527001715265,
+    "P06-top8": 0.020305527999880724,
+    "P06-multi": 0.016864742996403947,
+    "P06-state_last": 2.760061761364341e-07,
+    "P06-history": 1.4700344763696194e-07,
+    "P07-top4": 0.019655255004181527,
+    "P07-top8": 0.01941549699404277,
+    "P07-multi": 0.01670688200101722,
+    "P07-state_last": 2.90005118586123e-07,
+    "P07-history": 1.4698889572173357e-07,
+    "P08-top4": 0.021937579003861174,
+    "P08-top8": 0.021781118994113058,
+    "P08-multi": 0.01637419400503859,
+    "P08-state_last": 2.5899498723447323e-07,
+    "P08-history": 1.4300167094916105e-07
+  },
+  "note": "Human judgments are unset; citation ID validity does not establish factual grounding.",
+  "modes": [
+    "top4",
+    "top8",
+    "multi",
+    "state_last",
+    "history"
+  ],
+  "expanded_chunks_sha256": "99eb60bb2a5477f51619fa512f3fe1526f96998986a410b6fb70fa9d7cb40460",
+  "expanded_index_sha256": "cedfe3aeeb21b0b3df78dcb123e48ac770dacda0b91299a3cffcaf8472314a8c",
+  "original_chunks_sha256": "c9c0ba5f83d75d497056c51f3cecb8e43765e9355665074d28d5090f2b0e2ab2",
+  "expanded_chunk_count": 274,
+  "eligible_chunk_count": 72,
+  "filter": "Gen I Bulbapedia walkthroughs and source-grounded curated facts; mixed-scope articles excluded",
+  "preflight": {
+    "P01-top4": {
+      "prompt_tokens": 727,
+      "context_length": 4096
+    },
+    "P01-top8": {
+      "prompt_tokens": 1107,
+      "context_length": 4096
+    },
+    "P01-multi": {
+      "prompt_tokens": 1445,
+      "context_length": 4096
+    },
+    "P01-state_last": {
+      "prompt_tokens": 3425,
+      "context_length": 4096
+    },
+    "P01-history": {
+      "prompt_tokens": 3420,
+      "context_length": 4096
+    },
+    "P02-top4": {
+      "prompt_tokens": 732,
+      "context_length": 4096
+    },
+    "P02-top8": {
+      "prompt_tokens": 1095,
+      "context_length": 4096
+    },
+    "P02-multi": {
+      "prompt_tokens": 1240,
+      "context_length": 4096
+    },
+    "P02-state_last": {
+      "prompt_tokens": 3432,
+      "context_length": 4096
+    },
+    "P02-history": {
+      "prompt_tokens": 3439,
+      "context_length": 4096
+    },
+    "P03-top4": {
+      "prompt_tokens": 732,
+      "context_length": 4096
+    },
+    "P03-top8": {
+      "prompt_tokens": 1095,
+      "context_length": 4096
+    },
+    "P03-multi": {
+      "prompt_tokens": 1240,
+      "context_length": 4096
+    },
+    "P03-state_last": {
+      "prompt_tokens": 3432,
+      "context_length": 4096
+    },
+    "P03-history": {
+      "prompt_tokens": 3449,
+      "context_length": 4096
+    },
+    "P04-top4": {
+      "prompt_tokens": 732,
+      "context_length": 4096
+    },
+    "P04-top8": {
+      "prompt_tokens": 1095,
+      "context_length": 4096
+    },
+    "P04-multi": {
+      "prompt_tokens": 1240,
+      "context_length": 4096
+    },
+    "P04-state_last": {
+      "prompt_tokens": 3432,
+      "context_length": 4096
+    },
+    "P04-history": {
+      "prompt_tokens": 3458,
+      "context_length": 4096
+    },
+    "P05-top4": {
+      "prompt_tokens": 734,
+      "context_length": 4096
+    },
+    "P05-top8": {
+      "prompt_tokens": 1017,
+      "context_length": 4096
+    },
+    "P05-multi": {
+      "prompt_tokens": 1159,
+      "context_length": 4096
+    },
+    "P05-state_last": {
+      "prompt_tokens": 3432,
+      "context_length": 4096
+    },
+    "P05-history": {
+      "prompt_tokens": 3458,
+      "context_length": 4096
+    },
+    "P06-top4": {
+      "prompt_tokens": 738,
+      "context_length": 4096
+    },
+    "P06-top8": {
+      "prompt_tokens": 1167,
+      "context_length": 4096
+    },
+    "P06-multi": {
+      "prompt_tokens": 1305,
+      "context_length": 4096
+    },
+    "P06-state_last": {
+      "prompt_tokens": 3438,
+      "context_length": 4096
+    },
+    "P06-history": {
+      "prompt_tokens": 3464,
+      "context_length": 4096
+    },
+    "P07-top4": {
+      "prompt_tokens": 898,
+      "context_length": 4096
+    },
+    "P07-top8": {
+      "prompt_tokens": 1184,
+      "context_length": 4096
+    },
+    "P07-multi": {
+      "prompt_tokens": 1096,
+      "context_length": 4096
+    },
+    "P07-state_last": {
+      "prompt_tokens": 3435,
+      "context_length": 4096
+    },
+    "P07-history": {
+      "prompt_tokens": 3461,
+      "context_length": 4096
+    },
+    "P08-top4": {
+      "prompt_tokens": 909,
+      "context_length": 4096
+    },
+    "P08-top8": {
+      "prompt_tokens": 1228,
+      "context_length": 4096
+    },
+    "P08-multi": {
+      "prompt_tokens": 1107,
+      "context_length": 4096
+    },
+    "P08-state_last": {
+      "prompt_tokens": 3446,
+      "context_length": 4096
+    },
+    "P08-history": {
+      "prompt_tokens": 3472,
+      "context_length": 4096
+    }
+  },
+  "baseline": "pokemon_rag/data/experiments/qwen-hierarchical-prompt",
+  "history_mapping": "Known held or delivered parcel implies obtained; absent parcel alone does not imply never obtained"
+}

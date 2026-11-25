@@ -108,6 +108,14 @@ class RetrieverTests(unittest.TestCase):
             PokemonRetriever(self.data_dir)
 
     @patch("pokemon_rag.retriever.SentenceTransformer")
+    def test_filter_is_applied_before_limiting_results(self, factory):
+        factory.return_value.get_sentence_embedding_dimension.return_value = 2
+        factory.return_value.encode.return_value = np.array([[0.8, 0.6]], dtype=np.float32)
+        retriever = PokemonRetriever(self.data_dir)
+        results = retriever.retrieve("query", k=1, predicate=lambda doc: doc["id"] == "b")
+        self.assertEqual([row["id"] for row in results], ["b"])
+
+    @patch("pokemon_rag.retriever.SentenceTransformer")
     def test_changed_documents_fail_even_when_counts_match(self, factory):
         self.chunks.reverse()
         (self.data_dir / "chunks.json").write_text(json.dumps(self.chunks), encoding="utf-8")

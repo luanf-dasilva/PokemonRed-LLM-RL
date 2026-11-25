@@ -261,3 +261,52 @@ Generation I type chart. The existing retrieval labels were designed for the
 original corpus and need renewed relevance judgments before scoring an expanded
 index. The four structured records are non-executable, manually authored facts
 with source references, not verified game-state rules.
+
+## Expanded retrieval and state experiments
+
+The following runs expanded-index top 4, top 8, and three-query retrieval, plus
+two separate tests using the original full corpus: state placed last and an
+inventory/completed-events representation. It verifies the saved prompt,
+schema, model digest, and context window before running five repetitions of
+each of eight scenarios. The complete result is kept in an ignored directory.
+
+```sh
+python -m pokemon_rag.evaluate_variants \
+  --baseline pokemon_rag/data/experiments/qwen-hierarchical-prompt \
+  --expanded pokemon_rag/data/expanded-bulbapedia-clean \
+  --output pokemon_rag/data/experiments/expanded-variants
+```
+
+The expanded index contains 274 chunks, but these variants conservatively
+retrieve only the 72 Gen I walkthrough or source-grounded curated chunks; they
+exclude mixed-generation articles pending passage-level verification. The
+multi-query variant interleaves local progression, objective requirements, and
+local activities, deduplicating to at most eight chunks. Passing the metadata
+filter does not establish that every source claim is factually correct. Review
+the worksheet before reporting accuracy or grounding; the automatic
+completed-parcel-target count is only a narrow state-contradiction indicator.
+
+## Initial game-state and value-function work
+
+`pokemon_game.pret_data` parses a pinned subset of
+[pret/pokered](https://github.com/pret/pokered) into machine-readable lookup
+tables, source-linked semantic records, and a directed map graph. Its revision,
+selected files, and hashes are in `research/pokered/source_manifest.json`.
+To regenerate from a fresh checkout, check out that revision and run:
+
+```sh
+python -m pokemon_game.pret_data --source-dir /path/to/pokered
+```
+
+The parser verifies the source hashes and writes results to `processed/` under
+the source directory. `pokemon_game.state_encoder.encode_state(memory, lookups)`
+reads early-game map, position, party, bag, and event fields from a
+PyBoy-compatible memory object without mutating it. It separates current bag
+contents from recorded event flags. An absent party has unknown HP fraction.
+
+`pokemon_game.value_function.LocationValue` provides a deterministic value for
+manually supplied `REACH_LOCATION` goals. It uses graph distance between maps
+and Manhattan distance for coordinates on the same map. The graph is partial
+and optimistic: it does not model collision, quest locks, or dynamic `LAST_MAP`
+warps. It must not be treated as a verified traversable path or used as a
+complete greedy policy. Other goal types are explicitly unsupported for now.

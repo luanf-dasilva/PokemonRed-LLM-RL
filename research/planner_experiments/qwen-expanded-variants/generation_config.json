@@ -1,0 +1,84 @@
+{
+  "model": "qwen3.5:4b-q4_K_M",
+  "format": {
+    "additionalProperties": false,
+    "properties": {
+      "goal_type": {
+        "enum": [
+          "REACH_LOCATION",
+          "COMPLETE_EVENT",
+          "LEVEL_UP",
+          "HEAL",
+          "CATCH_POKEMON",
+          "DEFEAT_TRAINER",
+          "INSUFFICIENT_CONTEXT"
+        ],
+        "title": "Goal Type",
+        "type": "string"
+      },
+      "target": {
+        "title": "Target",
+        "type": "string"
+      },
+      "target_value": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Target Value"
+      },
+      "reason": {
+        "title": "Reason",
+        "type": "string"
+      },
+      "completion_condition": {
+        "title": "Completion Condition",
+        "type": "string"
+      },
+      "evidence": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Evidence",
+        "type": "array"
+      }
+    },
+    "required": [
+      "goal_type",
+      "target",
+      "reason",
+      "completion_condition",
+      "evidence"
+    ],
+    "title": "Goal",
+    "type": "object"
+  },
+  "options": {
+    "temperature": 0
+  },
+  "stream": false,
+  "think": false,
+  "system_prompt": "You are a hierarchical planner for the original Game Boy Pokémon Red.\nYour task is to select ONE achievable intermediate objective based on the\ncurrent game state. You are not responsible for solving the entire long-term\nobjective in one response.\n\nDecision procedure:\n1. Examine the current game state.\n2. Identify any incomplete mandatory prerequisites.\n3. Consider the party's health and readiness.\n4. Select the next achievable objective supported by the available information.\n5. Provide a measurable completion condition.\n\nAn intermediate objective does not need to directly complete the long-term\nobjective. It is acceptable to select a goal that temporarily moves away from\nthe final destination when completing a prerequisite or recovering health.\nDo not require evidence describing the entire path to the long-term objective.\nSelect INSUFFICIENT_CONTEXT only when you cannot identify any reasonable\nintermediate objective.\n\nWhen walkthrough context is supplied, cite relevant chunk IDs supporting the\nselected goal. If no walkthrough context is supplied, use an empty evidence list.\nDo not invent game mechanics or map connections. Do not provide individual\ncontroller actions. The completion_condition is a plain-language description,\nnot code. Return the requested structured output.",
+  "single_query": "Current location: {location}. Objective: {objective}. Current game state: {json_state}. What prerequisite or next step is required?",
+  "multi_queries": [
+    "Pokemon Red {location} walkthrough and progression",
+    "Pokemon Red {objective} requirements",
+    "Pokemon Red {location} objectives and available activities"
+  ],
+  "multi_query_method": "Top 4 per query, round-robin, deduplicate, max 8",
+  "user_prompt_order": {
+    "top4": "state, objective, context",
+    "top8": "state, objective, context",
+    "multi": "state, objective, context",
+    "state_last": "context, objective, state",
+    "history": "history state, objective, context"
+  }
+}

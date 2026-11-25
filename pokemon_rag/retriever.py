@@ -39,7 +39,7 @@ class PokemonRetriever:
         if self.index.d != self.model.get_sentence_embedding_dimension():
             raise RuntimeError("Index and model dimensions mismatch; rebuild the index")
 
-    def retrieve(self, query, k=4):
+    def retrieve(self, query, k=4, predicate=None):
         if not isinstance(query, str) or not query.strip():
             raise ValueError("Query must be a nonempty string")
         if isinstance(k, bool) or not isinstance(k, int) or k <= 0:
@@ -47,11 +47,17 @@ class PokemonRetriever:
         query_vector = np.ascontiguousarray(self.model.encode(
             [query], normalize_embeddings=True
         ), dtype=np.float32)
-        scores, indices = self.index.search(query_vector, min(k, len(self.chunks)))
-        return [
-            {**self.chunks[int(index)], "score": float(score)}
-            for score, index in zip(scores[0], indices[0])
-        ]
+        # Search the full small index when filtering so k applies after filtering.
+        count = len(self.chunks) if predicate is not None else min(k, len(self.chunks))
+        scores, indices = self.index.search(query_vector, count)
+        documents = []
+        for score, index in zip(scores[0], indices[0]):
+            chunk = self.chunks[int(index)]
+            if predicate is None or predicate(chunk):
+                documents.append({**chunk, "score": float(score)})
+                if len(documents) == k:
+                    break
+        return documents
 
 
 def main():

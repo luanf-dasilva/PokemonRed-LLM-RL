@@ -44,16 +44,20 @@ def retrieval_query(state, objective):
     )
 
 
-def make_payload(state, objective, documents, model=MODEL):
+def make_payload(state, objective, documents, model=MODEL, placement="state_first"):
     context = "\n\n".join(
         f"[{doc['id']}]\nSection: {doc['section']}\n{doc['text']}"
         for doc in documents
     )
-    prompt = (
-        f"CURRENT STATE:\n{json.dumps(state, indent=2, ensure_ascii=False)}\n\n"
-        f"LONG-TERM OBJECTIVE:\n{objective}\n\n"
-        f"WALKTHROUGH CONTEXT:\n{context}"
-    )
+    state_text = f"CURRENT STATE:\n{json.dumps(state, indent=2, ensure_ascii=False)}"
+    objective_text = f"LONG-TERM OBJECTIVE:\n{objective}"
+    context_text = f"WALKTHROUGH CONTEXT:\n{context}"
+    if placement == "state_first":
+        prompt = "\n\n".join((state_text, objective_text, context_text))
+    elif placement == "state_last":
+        prompt = "\n\n".join((context_text, objective_text, state_text))
+    else:
+        raise ValueError(f"Unknown prompt placement: {placement}")
     return {
         "model": model,
         "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": prompt}],
@@ -80,9 +84,9 @@ class PokemonPlanner:
             raise RuntimeError("No walkthrough context retrieved")
         return documents
 
-    def generate(self, state, objective, documents):
+    def generate(self, state, objective, documents, placement="state_first"):
         """Return raw and validated output plus timing and citation diagnostics."""
-        payload = make_payload(state, objective, documents, self.model)
+        payload = make_payload(state, objective, documents, self.model, placement=placement)
         started = time.perf_counter()
         response = requests.post(self.url, json=payload, timeout=self.timeout)
         latency = time.perf_counter() - started

@@ -170,3 +170,40 @@ structured-state query retrieves a parcel prerequisite. A nonzero exit status
 means the 7/8 hit-rate target or the state-query check was missed. Route 1 is
 not labelled relevant for the early-catching question because its extracted
 text says Pokémon cannot yet be caught there.
+
+## Structured planner evaluation
+
+With a local Ollama server and `qwen3.5:4b-q4_K_M` available, run the planner
+or the paired eight-scenario experiment (five repetitions per condition):
+
+```sh
+python -m pokemon_rag.planner
+python -m pokemon_rag.evaluate_planner --output pokemon_rag/data/experiments/my-run
+python -m pokemon_rag.evaluate_planner --summarize pokemon_rag/data/experiments/my-run
+```
+
+The output directory must be new. Each run records the scenario states, model
+metadata, retrieved documents, requests, raw responses, timing, and token
+counts. Paired conditions have the same prompt and generation settings; only
+the walkthrough context differs. Results and local corpus data are Git-ignored.
+The index must exist before running the experiment. `--repetitions` and `--seed`
+can be set explicitly; their defaults are five and zero.
+
+`review.jsonl` is a review worksheet keyed by trial ID. A reviewer should use
+`protocol.json` for each scenario's expected behavior and `results.jsonl` for
+the goal, state, and cited text. Set each applicable label to `true` or `false`,
+leave it `null` when it cannot be judged, and explain decisions in `notes`:
+
+- `factual_accuracy`: claims and proposed goal respect known game mechanics.
+- `prerequisite_correctness`: the goal does not skip a required earlier event.
+- `goal_validity`: the goal is achievable from the supplied state and useful
+  toward the objective; an unsupported or overly broad goal can fail here.
+- `grounding_accuracy`: in the RAG condition, the cited passages support the
+  claims and goal. Leave this `null` without RAG or when it is not assessable.
+
+Run the `--summarize` command after review. Unreviewed labels are excluded from
+accuracy rates. Citation-ID checks only test whether IDs were supplied, not
+whether they support a claim. The consistency output reports exact agreement of
+goal type, normalized target text, and target value; it is not a semantic
+equivalence assessment. Completion conditions are descriptive text and are
+never evaluated as code.

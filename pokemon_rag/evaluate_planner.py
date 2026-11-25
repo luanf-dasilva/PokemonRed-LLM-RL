@@ -48,6 +48,8 @@ def summarize(results, reviews):
         stats["insufficient_context"] = sum(
             (r.get("goal") or {}).get("goal_type") == "INSUFFICIENT_CONTEXT" for r in rows
         )
+        if any("exceeds_context_with_output" in r for r in rows):
+            stats["context_overflow_trials"] = sum(r.get("exceeds_context_with_output") is True for r in rows)
         for field, source in (("mean_latency_seconds", "latency_seconds"),
                               ("mean_prompt_tokens", "prompt_eval_count"),
                               ("mean_output_tokens", "eval_count")):

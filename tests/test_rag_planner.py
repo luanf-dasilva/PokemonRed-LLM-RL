@@ -1,10 +1,13 @@
 import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
 from pokemon_rag.evaluate_planner import summarize
+from pokemon_rag.compare_planner_runs import compare
 from pokemon_rag.planner import PokemonPlanner, make_payload
 from pokemon_rag.schemas import Goal
 
@@ -86,6 +89,56 @@ class SummaryTests(unittest.TestCase):
         self.assertEqual(stats["grounding_accuracy"], {"reviewed": 0, "pass_rate": None})
         self.assertEqual(stats["mean_prompt_tokens"], 250)
         self.assertTrue(stats["exact_goal_consistency"]["P01"])
+
+
+class ComparisonTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.old, self.new = (Path(self.tmp.name) / name for name in ("old", "new"))
+        self.protocol = {"model": "test", "model_info": {"digest": "abc"}, "objective": "goal",
+                         "repetitions": 1, "seed": 0, "case_file_sha256": "hash", "cases": [{"id": "P01"}]}
+        for path in (self.old, self.new):
+            path.mkdir()
+            (path / "protocol.json").write_text(json.dumps(self.protocol))
+            self.write_results(path, "old prompt" if path == self.old else "new prompt")
+
+    def write_results(self, path, prompt, documents=None):
+        records = []
+        for condition in ("without_rag", "with_rag"):
+            records.append({
+                "trial_id": f"P01-{condition}-1", "condition": condition, "scenario_id": "P01",
+                "documents": (documents or []) if condition == "with_rag" else [],
+                "request": {"model": "test", "messages": [{"role": "system", "content": prompt},
+                                                                {"role": "user", "content": "state"}]},
+                "goal": GOAL, "schema_valid": True,
+            })
+        (path / "results.jsonl").write_text("".join(json.dumps(row) + "\n" for row in records))
+
+    def test_matches_prompt_only_runs(self):
+        report = compare(self.old, self.new)
+        self.assertEqual(report["revised"]["with_rag"]["trials"], 1)
+
+    def test_rejects_changed_context_and_duplicate_trials(self):
+        self.write_results(self.new, "new prompt", documents=DOCS)
+        with self.assertRaisesRegex(ValueError, "Retrieved documents differ"):
+            compare(self.old, self.new)
+        self.write_results(self.new, "new prompt")
+        path = self.new / "results.jsonl"
+        lines = path.read_text().splitlines()
+        path.write_text(lines[0] + "\n" + lines[0] + "\n")
+        with self.assertRaisesRegex(ValueError, "duplicate trials"):
+            compare(self.old, self.new)
+
+    def test_rejects_changed_model_and_unchanged_prompt(self):
+        protocol = {**self.protocol, "model_info": {"digest": "different"}}
+        (self.new / "protocol.json").write_text(json.dumps(protocol))
+        with self.assertRaisesRegex(ValueError, "Model digests"):
+            compare(self.old, self.new)
+        (self.new / "protocol.json").write_text(json.dumps(self.protocol))
+        self.write_results(self.new, "old prompt")
+        with self.assertRaisesRegex(ValueError, "distinct system prompt"):
+            compare(self.old, self.new)
 
 
 if __name__ == "__main__":

@@ -10,14 +10,30 @@ from pokemon_rag.schemas import Goal
 
 MODEL = "qwen3.5:4b-q4_K_M"
 OLLAMA_URL = "http://localhost:11434/api/chat"
-SYSTEM_PROMPT = """You are a high-level planner for the original Game Boy Pokémon Red.
-Identify one achievable next subgoal toward the objective. Respect prerequisite
-events. Do not invent game mechanics or map connections. Do not give controller
-actions. The completion_condition is a plain-language description, not code.
-If walkthrough context is supplied, base your decision on it and cite supporting
-chunk IDs in evidence. If no walkthrough context is supplied, use an empty
-evidence list. If information is insufficient, choose INSUFFICIENT_CONTEXT.
-Return only the requested structured output."""
+SYSTEM_PROMPT = """You are a hierarchical planner for the original Game Boy Pokémon Red.
+Your task is to select ONE achievable intermediate objective based on the
+current game state. You are not responsible for solving the entire long-term
+objective in one response.
+
+Decision procedure:
+1. Examine the current game state.
+2. Identify any incomplete mandatory prerequisites.
+3. Consider the party's health and readiness.
+4. Select the next achievable objective supported by the available information.
+5. Provide a measurable completion condition.
+
+An intermediate objective does not need to directly complete the long-term
+objective. It is acceptable to select a goal that temporarily moves away from
+the final destination when completing a prerequisite or recovering health.
+Do not require evidence describing the entire path to the long-term objective.
+Select INSUFFICIENT_CONTEXT only when you cannot identify any reasonable
+intermediate objective.
+
+When walkthrough context is supplied, cite relevant chunk IDs supporting the
+selected goal. If no walkthrough context is supplied, use an empty evidence list.
+Do not invent game mechanics or map connections. Do not provide individual
+controller actions. The completion_condition is a plain-language description,
+not code. Return the requested structured output."""
 
 
 def retrieval_query(state, objective):

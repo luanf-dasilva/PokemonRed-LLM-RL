@@ -2,5 +2,6 @@ beautifulsoup4>=4.12,<5
 faiss-cpu>=1.9,<2
 numpy>=1.25,<3
 pydantic>=2,<3
+PyYAML>=6,<7
 requests>=2.31,<3
 sentence-transformers>=3,<6

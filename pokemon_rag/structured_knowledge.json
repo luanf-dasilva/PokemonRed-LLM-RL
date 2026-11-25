@@ -1,0 +1,48 @@
+[
+  {
+    "category": "progression",
+    "event": "Obtain Oak's Parcel",
+    "location": "Viridian City",
+    "target": "Viridian Poké Mart",
+    "prerequisites": ["Have a starter Pokémon"],
+    "unlocks": ["Deliver Oak's Parcel to Professor Oak"],
+    "entities": ["Oak's Parcel", "Professor Oak", "Poké Mart"],
+    "source": "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue/Part_2",
+    "source_section": "Viridian City > Poké Mart > Special Delivery",
+    "additional_sources": ["https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue/Part_1"],
+    "source_note": "The initial starter prerequisite is established in walkthrough part 1."
+  },
+  {
+    "category": "progression",
+    "event": "Deliver Oak's Parcel",
+    "location": "Pallet Town",
+    "target": "Professor Oak's Laboratory",
+    "prerequisites": ["Possess Oak's Parcel"],
+    "unlocks": ["Receive the Pokédex", "Northward progression from Viridian City"],
+    "entities": ["Oak's Parcel", "Professor Oak", "Pokédex"],
+    "source": "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue/Part_2",
+    "source_section": "Pallet Town > Oak's Lab; Viridian City"
+  },
+  {
+    "category": "geography",
+    "location": "Viridian Forest",
+    "region": "Kanto",
+    "entrance": "Route 2 south",
+    "exit": "Route 2 north",
+    "next_major_destination": "Pewter City",
+    "entities": ["Route 2", "Pewter City"],
+    "source": "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue/Part_3",
+    "source_section": "Route 2 > Viridian Forest"
+  },
+  {
+    "category": "gym",
+    "location": "Pewter City",
+    "leader": "Brock",
+    "badge": "Boulder Badge",
+    "specialization": "Rock",
+    "recommended_attack_types": ["Water", "Grass"],
+    "entities": ["Pewter Gym", "Brock", "Boulder Badge"],
+    "source": "https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue/Part_3",
+    "source_section": "Pewter City > Pewter Gym"
+  }
+]

@@ -1,0 +1,219 @@
+{
+  "model": "qwen3.5:4b-q4_K_M",
+  "model_info": {
+    "name": "qwen3.5:4b-q4_K_M",
+    "model": "qwen3.5:4b-q4_K_M",
+    "modified_at": "2026-11-23T10:37:05.869777383-05:00",
+    "size": 3324173934,
+    "digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+    "details": {
+      "parent_model": "model.gguf",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "4.2B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "embedding_length": 2560,
+      "runner": "llamacpp"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  "objective": "Obtain the Boulder Badge",
+  "repetitions": 5,
+  "seed": 0,
+  "cases": [
+    {
+      "id": "P01",
+      "state": {
+        "location": "Pallet Town",
+        "party_size": 0,
+        "party_levels": [],
+        "hp_fraction": 1.0,
+        "has_starter": false,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Obtain a starter from Professor Oak; reaching Oak or his lab is an acceptable prerequisite."
+    },
+    {
+      "id": "P02",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Visit Viridian Poké Mart and obtain Oak's Parcel."
+    },
+    {
+      "id": "P03",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": true,
+        "delivered_oaks_parcel": false,
+        "badges": 0
+      },
+      "expected": "Return toward Pallet Town and deliver Oak's Parcel to Professor Oak."
+    },
+    {
+      "id": "P04",
+      "state": {
+        "location": "Viridian City",
+        "party_size": 1,
+        "party_levels": [
+          7
+        ],
+        "hp_fraction": 0.8,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress north toward Route 2 or Viridian Forest; a sensible immediate preparation may also be acceptable."
+    },
+    {
+      "id": "P05",
+      "state": {
+        "location": "Route 2",
+        "party_size": 1,
+        "party_levels": [
+          8
+        ],
+        "hp_fraction": 0.9,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress toward or enter Viridian Forest."
+    },
+    {
+      "id": "P06",
+      "state": {
+        "location": "Viridian Forest",
+        "party_size": 2,
+        "party_levels": [
+          10,
+          6
+        ],
+        "hp_fraction": 0.9,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Traverse or exit Viridian Forest toward Pewter City; do not assume a location inside the forest."
+    },
+    {
+      "id": "P07",
+      "state": {
+        "location": "Pewter City",
+        "party_size": 1,
+        "party_levels": [
+          10
+        ],
+        "hp_fraction": 0.15,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Consider healing at the Pokémon Center before challenging Brock; grade alternatives with attention to low health."
+    },
+    {
+      "id": "P08",
+      "state": {
+        "location": "Pewter City",
+        "party_size": 1,
+        "party_levels": [
+          13
+        ],
+        "starter_species": "Squirtle",
+        "hp_fraction": 1.0,
+        "has_starter": true,
+        "has_oaks_parcel": false,
+        "delivered_oaks_parcel": true,
+        "badges": 0
+      },
+      "expected": "Progress toward Pewter Gym or challenge Brock; the given Squirtle and health indicate reasonable preparation."
+    }
+  ],
+  "case_file_sha256": "facdf194dffd6577fbbd14ca694defe1cfd109e2d2497695aa76dc0da9e56c6e",
+  "context_retrieval_seconds": {
+    "P01": 2.32712814900151,
+    "P02": 0.019588894007029012,
+    "P03": 0.01992755699029658,
+    "P04": 0.019902016007108614,
+    "P05": 0.01923448000161443,
+    "P06": 0.020220411999616772,
+    "P07": 0.019421552991843782,
+    "P08": 0.02189248699869495
+  },
+  "note": "Full-context prompt preflight uses one output token; trials use the unchanged baseline settings.",
+  "context_mode": "full",
+  "baseline": "pokemon_rag/data/experiments/qwen-hierarchical-prompt",
+  "chunks_sha256": "c9c0ba5f83d75d497056c51f3cecb8e43765e9355665074d28d5090f2b0e2ab2",
+  "preflight": {
+    "P01": {
+      "prompt_tokens": 3425,
+      "context_length": 4096,
+      "remaining_tokens": 671
+    },
+    "P02": {
+      "prompt_tokens": 3432,
+      "context_length": 4096,
+      "remaining_tokens": 664
+    },
+    "P03": {
+      "prompt_tokens": 3432,
+      "context_length": 4096,
+      "remaining_tokens": 664
+    },
+    "P04": {
+      "prompt_tokens": 3432,
+      "context_length": 4096,
+      "remaining_tokens": 664
+    },
+    "P05": {
+      "prompt_tokens": 3432,
+      "context_length": 4096,
+      "remaining_tokens": 664
+    },
+    "P06": {
+      "prompt_tokens": 3438,
+      "context_length": 4096,
+      "remaining_tokens": 658
+    },
+    "P07": {
+      "prompt_tokens": 3435,
+      "context_length": 4096,
+      "remaining_tokens": 661
+    },
+    "P08": {
+      "prompt_tokens": 3446,
+      "context_length": 4096,
+      "remaining_tokens": 650
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "model": "qwen3.5:4b-q4_K_M",
+  "format": {
+    "additionalProperties": false,
+    "properties": {
+      "goal_type": {
+        "enum": [
+          "REACH_LOCATION",
+          "COMPLETE_EVENT",
+          "LEVEL_UP",
+          "HEAL",
+          "CATCH_POKEMON",
+          "DEFEAT_TRAINER",
+          "INSUFFICIENT_CONTEXT"
+        ],
+        "title": "Goal Type",
+        "type": "string"
+      },
+      "target": {
+        "title": "Target",
+        "type": "string"
+      },
+      "target_value": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Target Value"
+      },
+      "reason": {
+        "title": "Reason",
+        "type": "string"
+      },
+      "completion_condition": {
+        "title": "Completion Condition",
+        "type": "string"
+      },
+      "evidence": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Evidence",
+        "type": "array"
+      }
+    },
+    "required": [
+      "goal_type",
+      "target",
+      "reason",
+      "completion_condition",
+      "evidence"
+    ],
+    "title": "Goal",
+    "type": "object"
+  },
+  "options": {
+    "temperature": 0
+  },
+  "stream": false,
+  "think": false,
+  "system_prompt": "You are a high-level planner for the original Game Boy Pokémon Red.\nIdentify one achievable next subgoal toward the objective. Respect prerequisite\nevents. Do not invent game mechanics or map connections. Do not give controller\nactions. The completion_condition is a plain-language description, not code.\nIf walkthrough context is supplied, base your decision on it and cite supporting\nchunk IDs in evidence. If no walkthrough context is supplied, use an empty\nevidence list. If information is insufficient, choose INSUFFICIENT_CONTEXT.\nReturn only the requested structured output.",
+  "user_prompt_template": "CURRENT STATE then LONG-TERM OBJECTIVE then WALKTHROUGH CONTEXT",
+  "context_condition": "paired no context and single-query top 4"
+}

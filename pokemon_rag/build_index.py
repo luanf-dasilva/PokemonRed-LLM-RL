@@ -1,5 +1,6 @@
 """Build a CPU MiniLM and FAISS index from extracted walkthrough sections."""
 
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -83,4 +84,6 @@ def build_index(data_dir=DATA_DIR):
 
 
 if __name__ == "__main__":
-    build_index()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--data-dir", type=Path, default=DATA_DIR)
+    build_index(parser.parse_args().data_dir)

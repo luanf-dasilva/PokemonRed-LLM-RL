@@ -58,8 +58,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("query", help="Question or game-state search query")
     parser.add_argument("-k", type=int, default=4, help="Number of results")
+    parser.add_argument("--data-dir", type=Path, default=DATA_DIR, help="Corpus and index directory")
     args = parser.parse_args()
-    print(json.dumps(PokemonRetriever().retrieve(args.query, args.k), indent=2, ensure_ascii=False))
+    print(json.dumps(PokemonRetriever(data_dir=args.data_dir).retrieve(args.query, args.k), indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

@@ -189,6 +189,17 @@ the walkthrough context differs. Results and local corpus data are Git-ignored.
 The index must exist before running the experiment. `--repetitions` and `--seed`
 can be set explicitly; their defaults are five and zero.
 
+For a prompt ablation, keep the original run directory and write the revised
+run to a new directory. Compare each revised condition with its corresponding
+original condition, checking that model metadata, scenarios, generation
+settings, and retrieved documents match. The exact prompts are saved in each
+trial. These scenarios are development cases, not a held-out test set.
+To verify those controls and print the paired summaries, run:
+
+```sh
+python -m pokemon_rag.compare_planner_runs path/to/original-run path/to/revised-run
+```
+
 `review.jsonl` is a review worksheet keyed by trial ID. A reviewer should use
 `protocol.json` for each scenario's expected behavior and `results.jsonl` for
 the goal, state, and cited text. Set each applicable label to `true` or `false`,
@@ -207,3 +218,46 @@ whether they support a claim. The consistency output reports exact agreement of
 goal type, normalized target text, and target value; it is not a semantic
 equivalence assessment. Completion conditions are descriptive text and are
 never evaluated as code.
+
+## Corpus expansion and full-context experiment
+
+Run the original 27 chunks as full context against a saved single-query run:
+
+```sh
+python -m pokemon_rag.evaluate_full_context \
+  --baseline pokemon_rag/data/experiments/qwen-hierarchical-prompt \
+  --output pokemon_rag/data/experiments/full-context
+```
+
+The script checks the saved prompt, schema, model digest, and baseline passages,
+then probes the actual token count and running context length for every state.
+The output records each trial and flags any input-plus-output context overflow.
+Review the result worksheet before reporting factual or grounding accuracy.
+
+The separate expanded-corpus workflow reads `pokemon_rag/sources.yaml`. It
+includes walkthrough parts 4–6, dedicated articles, and source-linked structured
+facts; `--include-later` adds walkthrough parts 7–17. For example:
+
+```sh
+python -m pokemon_rag.ingest_expanded --site bulbapedia \
+  --output pokemon_rag/data/expanded
+python -m pokemon_rag.build_index --data-dir pokemon_rag/data/expanded
+python -m pokemon_rag.retriever --data-dir pokemon_rag/data/expanded \
+  "Where do I get Oak's Parcel?" -k 4
+```
+
+The output must be a new directory, so the original corpus and index remain
+available for comparison. The downloader honors robots.txt and stops on access
+errors. If a site denies automated access, save its HTML as
+`pokemon_rag/data/raw/<site>/<source-id>.html` and use `--offline`; source IDs
+are in the catalog. `--site strategywiki` selects the summary and detailed pages
+through the third badge. StrategyWiki material is subject to its own licensing
+and attribution terms; consult the source site before redistributing it.
+
+General entity articles cover multiple games and generations. They are marked
+as mixed scope, and the lightweight filter does not guarantee every extracted
+statement applies to Pokémon Red. Tables are still excluded, including the
+Generation I type chart. The existing retrieval labels were designed for the
+original corpus and need renewed relevance judgments before scoring an expanded
+index. The four structured records are non-executable, manually authored facts
+with source references, not verified game-state rules.

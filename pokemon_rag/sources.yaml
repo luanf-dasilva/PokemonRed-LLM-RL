@@ -1,0 +1,38 @@
+# Sources are versioned here; downloaded content and indexes remain Git-ignored.
+# StrategyWiki pages may require manually saved HTML if automated access is denied.
+bulbapedia_walkthrough:
+  first_part: 4
+  last_part: 17
+  initial_last_part: 6
+sources:
+  - {id: strategy-summary, site: strategywiki, category: walkthroughs, title: Walkthrough summary, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Walkthrough_summary'}
+  - {id: strategy-pallet, site: strategywiki, category: walkthroughs, title: Pallet Town, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Pallet_Town'}
+  - {id: strategy-route1, site: strategywiki, category: walkthroughs, title: Route 1, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Route_1'}
+  - {id: strategy-viridian, site: strategywiki, category: walkthroughs, title: Viridian City, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Viridian_City'}
+  - {id: strategy-routes2-22, site: strategywiki, category: walkthroughs, title: Routes 2 and 22, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Routes_2_and_22'}
+  - {id: strategy-forest, site: strategywiki, category: walkthroughs, title: Viridian Forest, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Viridian_Forest'}
+  - {id: strategy-pewter, site: strategywiki, category: walkthroughs, title: Pewter City, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Pewter_City'}
+  - {id: strategy-route3, site: strategywiki, category: walkthroughs, title: Route 3, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Route_3'}
+  - {id: strategy-mtmoon, site: strategywiki, category: walkthroughs, title: Mt. Moon, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Mt._Moon'}
+  - {id: strategy-route4, site: strategywiki, category: walkthroughs, title: Route 4, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Route_4'}
+  - {id: strategy-cerulean, site: strategywiki, category: walkthroughs, title: Cerulean City, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Cerulean_City'}
+  - {id: strategy-routes24-25, site: strategywiki, category: walkthroughs, title: Routes 24 and 25, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Routes_24_and_25'}
+  - {id: strategy-routes5-6, site: strategywiki, category: walkthroughs, title: Routes 5 and 6, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Routes_5_and_6'}
+  - {id: strategy-vermilion, site: strategywiki, category: walkthroughs, title: Vermilion City, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/Vermilion_City'}
+  - {id: strategy-ssanne, site: strategywiki, category: walkthroughs, title: S.S. Anne, url: 'https://strategywiki.org/wiki/Pok%C3%A9mon_Red_and_Blue/S.S._Anne'}
+  - {id: bulbapedia-pallet, site: bulbapedia, category: locations, title: Pallet Town, url: 'https://bulbapedia.bulbagarden.net/wiki/Pallet_Town'}
+  - {id: bulbapedia-route1, site: bulbapedia, category: locations, title: Route 1, url: 'https://bulbapedia.bulbagarden.net/wiki/Kanto_Route_1'}
+  - {id: bulbapedia-viridian, site: bulbapedia, category: locations, title: Viridian City, url: 'https://bulbapedia.bulbagarden.net/wiki/Viridian_City'}
+  - {id: bulbapedia-route2, site: bulbapedia, category: locations, title: Route 2, url: 'https://bulbapedia.bulbagarden.net/wiki/Kanto_Route_2'}
+  - {id: bulbapedia-forest, site: bulbapedia, category: locations, title: Viridian Forest, url: 'https://bulbapedia.bulbagarden.net/wiki/Viridian_Forest'}
+  - {id: bulbapedia-pewter, site: bulbapedia, category: locations, title: Pewter City, url: 'https://bulbapedia.bulbagarden.net/wiki/Pewter_City'}
+  - {id: bulbapedia-gym, site: bulbapedia, category: locations, title: Pewter Gym, url: 'https://bulbapedia.bulbagarden.net/wiki/Pewter_Gym'}
+  - {id: bulbapedia-parcel, site: bulbapedia, category: mechanics, title: Oak's Parcel, url: 'https://bulbapedia.bulbagarden.net/wiki/Parcel'}
+  - {id: bulbapedia-oak, site: bulbapedia, category: mechanics, title: Professor Oak, url: 'https://bulbapedia.bulbagarden.net/wiki/Professor_Oak'}
+  - {id: bulbapedia-brock, site: bulbapedia, category: mechanics, title: Brock, url: 'https://bulbapedia.bulbagarden.net/wiki/Brock'}
+  - {id: bulbapedia-badge, site: bulbapedia, category: mechanics, title: Boulder Badge, url: 'https://bulbapedia.bulbagarden.net/wiki/Badge'}
+  - {id: bulbapedia-center, site: bulbapedia, category: mechanics, title: Pokémon Center, url: 'https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Center'}
+  - {id: bulbapedia-mart, site: bulbapedia, category: mechanics, title: Poké Mart, url: 'https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9_Mart'}
+  - {id: bulbapedia-ball, site: bulbapedia, category: mechanics, title: Poké Ball, url: 'https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9_Ball'}
+  - {id: bulbapedia-experience, site: bulbapedia, category: mechanics, title: Experience, url: 'https://bulbapedia.bulbagarden.net/wiki/Experience'}
+  - {id: bulbapedia-types, site: bulbapedia, category: mechanics, title: Type effectiveness, url: 'https://bulbapedia.bulbagarden.net/wiki/Type/Type_chart'}

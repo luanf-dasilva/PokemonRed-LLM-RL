@@ -1,0 +1,78 @@
+{
+  "without_rag": {
+    "trials": 40,
+    "schema_valid": 40,
+    "schema_valid_rate": 1.0,
+    "evidence_present": 0,
+    "valid_cited_ids_with_evidence": 0,
+    "invalid_citation_ids": 0,
+    "insufficient_context": 0,
+    "mean_latency_seconds": 3.7494439070273073,
+    "mean_prompt_tokens": 374,
+    "mean_output_tokens": 236.75,
+    "factual_accuracy": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "prerequisite_correctness": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "goal_validity": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "grounding_accuracy": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "exact_goal_consistency": {
+      "P05": true,
+      "P02": true,
+      "P06": true,
+      "P03": true,
+      "P01": true,
+      "P04": false,
+      "P08": true,
+      "P07": true
+    }
+  },
+  "with_rag": {
+    "trials": 40,
+    "schema_valid": 40,
+    "schema_valid_rate": 1.0,
+    "evidence_present": 30,
+    "valid_cited_ids_with_evidence": 30,
+    "invalid_citation_ids": 0,
+    "insufficient_context": 10,
+    "mean_latency_seconds": 2.624402130551607,
+    "mean_prompt_tokens": 842.875,
+    "mean_output_tokens": 157.8,
+    "factual_accuracy": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "prerequisite_correctness": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "goal_validity": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "grounding_accuracy": {
+      "reviewed": 0,
+      "pass_rate": null
+    },
+    "exact_goal_consistency": {
+      "P05": true,
+      "P02": true,
+      "P06": true,
+      "P03": true,
+      "P01": true,
+      "P04": true,
+      "P08": true,
+      "P07": true
+    }
+  }
+}

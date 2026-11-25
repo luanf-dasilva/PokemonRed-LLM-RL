@@ -1,0 +1,10 @@
+[
+  {"id": "Q01", "query": "How do I obtain my starter Pokémon?", "relevant": [{"part": 1, "section": "Pallet Town > Professor Oak's Lab"}]},
+  {"id": "Q02", "query": "What must I do with Oak's Parcel?", "relevant": [{"part": 2, "section": "Viridian City > Poké Mart > Special Delivery"}, {"part": 2, "section": "Pallet Town > Oak's Lab"}]},
+  {"id": "Q03", "query": "How do I reach Pewter City from Viridian City?", "relevant": [{"part": 2, "section": "Route 2 (West)"}, {"part": 3, "section": "Route 2 > Viridian Forest"}]},
+  {"id": "Q04", "query": "Why can't I progress north from Viridian City?", "relevant": [{"part": 2, "section": "Viridian City", "text_contains": "Oak's Parcel delivered"}, {"part": 2, "section": "Viridian City > Poké Mart > Special Delivery"}]},
+  {"id": "Q05", "query": "Where can I restore my Pokémon's health?", "relevant": [{"part": 2, "section": "Viridian City > Pokémon Center"}]},
+  {"id": "Q06", "query": "How should I prepare to fight Brock?", "relevant": [{"part": 3, "section": "Pewter City > Pewter Gym"}]},
+  {"id": "Q07", "query": "Where can I catch additional Pokémon early in the game?", "relevant": [{"part": 2, "section": "Route 2 (West)"}, {"part": 3, "section": "Route 2 > Viridian Forest"}, {"part": 2, "section": "Route 22"}]},
+  {"id": "Q08", "query": "What should I do after delivering Oak's Parcel?", "relevant": [{"part": 2, "section": "Viridian City", "text_contains": "Oak's Parcel delivered"}]}
+]

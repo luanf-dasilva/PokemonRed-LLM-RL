@@ -148,3 +148,25 @@ The walkthrough text is contributed by Bulbapedia authors and is subject to
 including its Creative Commons Attribution-NonCommercial-ShareAlike license;
 it is not covered by this repository's software license. Each extracted section
 retains its source page URL.
+
+## Semantic retrieval
+
+After ingestion, build the MiniLM embeddings and FAISS index, evaluate the
+labelled queries, or search for a specific question:
+
+```sh
+python -m pokemon_rag.build_index
+python -m pokemon_rag.evaluate
+python -m pokemon_rag.retriever "What must I do with Oak's Parcel?" -k 4
+python -m unittest discover -s tests
+```
+
+The first build downloads `sentence-transformers/all-MiniLM-L6-v2`. The model
+runs on CPU for indexing and retrieval. The index, chunks, and their integrity
+metadata are stored in the ignored `pokemon_rag/data/` directory; rebuild the
+index after re-ingesting. The evaluation prints Hit Rate@4 and MRR@4 over the
+eight queries in `pokemon_rag/evaluation_cases.json`, then checks whether the
+structured-state query retrieves a parcel prerequisite. A nonzero exit status
+means the 7/8 hit-rate target or the state-query check was missed. Route 1 is
+not labelled relevant for the early-catching question because its extracted
+text says Pokémon cannot yet be caught there.

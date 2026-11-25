@@ -264,7 +264,7 @@ class RedGymEnv(Env):
         levels = [
             self.read_m(a) for a in [0xD18C, 0xD1B8, 0xD1E4, 0xD210, 0xD23C, 0xD268]
         ]
-        self.agent_stats.append(
+        self.agent_stats = [
             {
                 "step": self.step_count,
                 "x": x_pos,
@@ -283,7 +283,7 @@ class RedGymEnv(Env):
                 "event": self.progress_reward["event"],
                 "healr": self.total_healing_rew,
             }
-        )
+        ]
 
     def start_video(self):
 

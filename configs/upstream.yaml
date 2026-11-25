@@ -1,0 +1,17 @@
+training:
+  num_cpu: 64
+  n_steps: 2560
+  batch_size: 512
+  n_epochs: 1
+  gamma: 0.997
+  ent_coef: 0.01
+  learning_rate: 0.0003
+  total_timesteps: 100000000
+  seed: 0
+  device: cuda
+  session_path: runs/upstream
+
+rewards:
+  level: false
+  opponent_level: false
+  death_penalty: false

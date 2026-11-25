@@ -21,6 +21,7 @@ museum_ticket = (0xD754, 0)
 
 class RedGymEnv(Env):
     def __init__(self, config=None):
+        self.reward_config = config.get("rewards", {})
         self.s_path = config["session_path"]
         self.save_final_state = config["save_final_state"]
         self.print_rewards = config["print_rewards"]
@@ -400,7 +401,7 @@ class RedGymEnv(Env):
         prog = self.progress_reward
         # these values are only used by memory
         return (
-            prog["level"] * 100 / self.reward_scale,
+            prog.get("level", 0) * 100 / self.reward_scale,
             self.read_hp_fraction() * 2000,
             prog["explore"] * 150 / (self.explore_weight * self.reward_scale),
         )
@@ -516,15 +517,17 @@ class RedGymEnv(Env):
         # https://github.com/pret/pokered/blob/91dc3c9f9c8fd529bb6e8307b58b96efa0bec67e/constants/event_constants.asm
         state_scores = {
             "event": self.reward_scale * self.update_max_event_rew() * 4,
-            "level": self.reward_scale * self.get_levels_reward(),
             "heal": self.reward_scale * self.total_healing_rew * 10,
-            "op_lvl": self.reward_scale * self.update_max_op_level() * 0.2,
-            "dead": self.reward_scale * self.died_count * -0.1,
             "badge": self.reward_scale * self.get_badges() * 10,
             "explore": self.reward_scale * self.explore_weight * len(self.seen_coords) * 0.1,
             "stuck": self.reward_scale * self.get_current_coord_count_reward() * -0.05
         }
-
+        if self.reward_config.get("level", True):
+            state_scores["level"] = self.reward_scale * self.get_levels_reward()
+        if self.reward_config.get("opponent_level", True):
+            state_scores["op_lvl"] = self.reward_scale * self.update_max_op_level() * 0.2
+        if self.reward_config.get("death_penalty", True):
+            state_scores["dead"] = self.reward_scale * self.died_count * -0.1
         return state_scores
 
     def update_max_op_level(self):

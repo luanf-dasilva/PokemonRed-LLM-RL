@@ -49,6 +49,7 @@ ptyprocess==0.7.0
 pure_eval==0.2.3
 pyboy==2.4.0
 Pygments==2.18.0
+PyYAML==6.0.2
 pyparsing==3.2.0
 PySDL2==0.9.16
 pysdl2-dll==2.30.2

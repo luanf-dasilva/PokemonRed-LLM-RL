@@ -1,6 +1,6 @@
-import sys
-from os.path import exists
+import argparse
 from pathlib import Path
+import yaml
 from red_gym_env_v2 import RedGymEnv
 from stream_agent_wrapper import StreamWrapper
 from stable_baselines3 import PPO
@@ -34,23 +34,36 @@ def make_env(rank, env_conf, seed=0):
     return _init
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=str, default=None)
+    args = parser.parse_args()
+    with open(args.config, encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+    training_config = config["training"]
+    reward_config = config["rewards"]
 
     use_wandb_logging = False
     ep_length = 2048 * 80
-    sess_id = "runs"
-    sess_path = Path(sess_id)
+    sess_path = Path(training_config["session_path"])
+    sess_path.mkdir(parents=True, exist_ok=True)
+    sess_id = sess_path.name
+    with open(sess_path / "config.yaml", "w", encoding="utf-8") as f:
+        yaml.safe_dump(config, f, sort_keys=False)
 
     env_config = {
                 'headless': True, 'save_final_state': False, 'early_stop': False,
                 'action_freq': 24, 'init_state': '../init.state', 'max_steps': ep_length, 
                 'print_rewards': True, 'save_video': False, 'fast_video': True, 'session_path': sess_path,
-                'gb_path': '../PokemonRed.gb', 'debug': False, 'reward_scale': 0.5, 'explore_weight': 0.25
+                'gb_path': '../PokemonRed.gb', 'debug': False, 'reward_scale': 0.5, 'explore_weight': 0.25,
+                'rewards': reward_config,
             }
     
     print(env_config)
     
-    num_cpu = 64 # Also sets the number of episodes per training iteration
-    env = SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
+    num_cpu = training_config["num_cpu"]
+    seed = training_config["seed"]
+    env = SubprocVecEnv([make_env(i, env_config, seed=seed) for i in range(num_cpu)])
     
     checkpoint_callback = CheckpointCallback(save_freq=ep_length//2, save_path=sess_path,
                                      name_prefix="poke")
@@ -74,28 +87,32 @@ if __name__ == "__main__":
 
     #env_checker.check_env(env)
 
-    # put a checkpoint here you want to start from    
-    if sys.stdin.isatty():
-        file_name = ""
+    ppo_config = {
+        "n_steps": training_config["n_steps"],
+        "batch_size": training_config["batch_size"],
+        "n_epochs": training_config["n_epochs"],
+        "gamma": training_config["gamma"],
+        "ent_coef": training_config["ent_coef"],
+        "learning_rate": training_config["learning_rate"],
+        "seed": training_config["seed"],
+        "device": training_config["device"],
+        "tensorboard_log": str(sess_path),
+        "verbose": 1,
+    }
+    if args.checkpoint:
+        print(f"Loading checkpoint: {args.checkpoint}")
+        model = PPO.load(args.checkpoint, env=env, **ppo_config)
     else:
-        file_name = sys.stdin.read().strip() #"runs/poke_26214400_steps"
-
-    train_steps_batch = ep_length // 64
-    
-    if exists(file_name + ".zip"):
-        print("\nloading checkpoint")
-        model = PPO.load(file_name, env=env)
-        model.n_steps = train_steps_batch
-        model.n_envs = num_cpu
-        model.rollout_buffer.buffer_size = train_steps_batch
-        model.rollout_buffer.n_envs = num_cpu
-        model.rollout_buffer.reset()
-    else:
-        model = PPO("MultiInputPolicy", env, verbose=1, n_steps=train_steps_batch, batch_size=512, n_epochs=1, gamma=0.997, ent_coef=0.01, tensorboard_log=sess_path)
+        model = PPO("MultiInputPolicy", env, **ppo_config)
     
     print(model.policy)
 
-    model.learn(total_timesteps=(ep_length)*num_cpu*10000, callback=CallbackList(callbacks), tb_log_name="poke_ppo")
+    model.learn(
+        total_timesteps=training_config["total_timesteps"],
+        callback=CallbackList(callbacks),
+        tb_log_name="poke_ppo",
+        reset_num_timesteps=args.checkpoint is None,
+    )
 
     if use_wandb_logging:
         run.finish()

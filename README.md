@@ -125,3 +125,26 @@ Check out these awesome projects!
 <a href="https://github.com/DLR-RM/stable-baselines3">
   <img src="/assets/sblogo.png" height="64">
 </a>
+
+# Walkthrough ingestion
+
+The standalone `pokemon_rag` module extracts prose from the first three parts
+of the [Bulbapedia Pokémon Red and Blue walkthrough](https://bulbapedia.bulbagarden.net/wiki/Walkthrough:Pok%C3%A9mon_Red_and_Blue).
+Install its current dependencies and run it from the repository root:
+
+```sh
+python -m pip install -r pokemon_rag/requirements.txt
+python -m pokemon_rag.ingest
+```
+
+HTML is cached under `pokemon_rag/data/raw/part_1.html` through `part_3.html`;
+the extracted sections are written to `pokemon_rag/data/sections.json`. If the
+site denies automated access, save the pages manually at those paths and run the
+command again. Tables are excluded, so the output does not include all encounter,
+trainer, or item details. The generated data directory is not tracked by Git.
+
+The walkthrough text is contributed by Bulbapedia authors and is subject to
+[Bulbapedia's copyright terms](https://bulbapedia.bulbagarden.net/wiki/Bulbapedia:Copyrights),
+including its Creative Commons Attribution-NonCommercial-ShareAlike license;
+it is not covered by this repository's software license. Each extracted section
+retains its source page URL.

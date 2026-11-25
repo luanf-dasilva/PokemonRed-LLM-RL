@@ -28,7 +28,7 @@ __pycache__/
 *.pyc
 
 # Generated RAG artifacts
-/pokemon_rag/data/raw/
+/pokemon_rag/data/
 /pokemon_rag/rag_data/
 *.index
 

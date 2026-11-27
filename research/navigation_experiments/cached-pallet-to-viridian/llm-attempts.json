@@ -1,0 +1,96 @@
+[
+  {
+    "objective": "Travel from Pallet Town to Viridian City",
+    "state": {
+      "map_id": 0,
+      "map_name": "PALLET_TOWN",
+      "location": "Pallet Town",
+      "x": 12,
+      "y": 12,
+      "party_size": 1,
+      "party_levels": [
+        6
+      ],
+      "party": [
+        {
+          "species_id": 177,
+          "species": "SQUIRTLE",
+          "level": 6,
+          "hp": 22,
+          "max_hp": 22
+        }
+      ],
+      "hp_fraction": 1.0,
+      "inventory": [],
+      "completed_events": [
+        "EVENT_GOT_STARTER",
+        "EVENT_GOT_OAKS_PARCEL",
+        "EVENT_OAK_GOT_PARCEL",
+        "EVENT_GOT_POKEDEX"
+      ],
+      "has_starter": true,
+      "has_oaks_parcel": false,
+      "delivered_oaks_parcel": true,
+      "badges": 0
+    },
+    "goal": {
+      "goal_type": "INSUFFICIENT_CONTEXT",
+      "target": "Travel from Pallet Town to Viridian City",
+      "target_value": null,
+      "reason": "The current game state indicates that the player has not yet received Oak's Parcel (has_oaks_parcel: false), which is a mandatory prerequisite for delivering it to Professor Oak. The walkthrough context confirms that the parcel must be delivered before Blue arrives and leaves, after which the path northward to Route 1 becomes clear. Without the parcel in inventory or delivered status, the player cannot proceed toward Viridian City.",
+      "completion_condition": "",
+      "evidence": []
+    },
+    "schema_valid": true,
+    "citation_ids_valid": true,
+    "evidence_present": false,
+    "latency_seconds": 7.382933236999634
+  },
+  {
+    "objective": "Obtain the Boulder Badge",
+    "state": {
+      "map_id": 0,
+      "map_name": "PALLET_TOWN",
+      "location": "Pallet Town",
+      "x": 12,
+      "y": 12,
+      "party_size": 1,
+      "party_levels": [
+        6
+      ],
+      "party": [
+        {
+          "species_id": 177,
+          "species": "SQUIRTLE",
+          "level": 6,
+          "hp": 22,
+          "max_hp": 22
+        }
+      ],
+      "hp_fraction": 1.0,
+      "inventory": [],
+      "completed_events": [
+        "EVENT_GOT_STARTER",
+        "EVENT_GOT_OAKS_PARCEL",
+        "EVENT_OAK_GOT_PARCEL",
+        "EVENT_GOT_POKEDEX"
+      ],
+      "has_starter": true,
+      "has_oaks_parcel": false,
+      "delivered_oaks_parcel": true,
+      "badges": 0
+    },
+    "goal": {
+      "goal_type": "INSUFFICIENT_CONTEXT",
+      "target": "Obtain the Boulder Badge",
+      "target_value": null,
+      "reason": "The current game state shows the player is in Pallet Town with a Squirtle at Level 6. The long-term objective requires reaching Pewter City and defeating Brock, who specializes in Rock-type Pok\u00e9mon. However, the provided walkthrough context does not contain information regarding how to travel from Pallet Town to Pewter City (e.g., specific map connections, required items like an Escape Rope or Bike Voucher, or intermediate locations). Without knowing the path or necessary prerequisites to leave Pallet Town and reach the gym, no reasonable intermediate objective can be selected.",
+      "completion_condition": "",
+      "evidence": []
+    },
+    "schema_valid": true,
+    "citation_ids_valid": true,
+    "evidence_present": false,
+    "latency_seconds": 8.687482785000157
+  }
+]

@@ -346,3 +346,55 @@ from a single emulator snapshot is a development test, not an independent
 estimate of success across game states or evidence that greedy lookahead
 outperforms a trained policy generally. Repeated policy seeds do not change the
 saved emulator RNG state.
+
+## Cached and model-based navigation
+
+Persist a graph and compare cold model-based navigation with warm cached
+lookahead and model-based navigation:
+
+```sh
+python -m pokemon_game.evaluate_greedy \
+  --output pokemon_game/data/cache-run --cache-dir pokemon_game/data/nav-cache \
+  --episodes 3 --policies model_greedy cached_greedy
+```
+
+The first eligible run discovers and saves a graph; later compatible runs load
+it. Compatibility includes the exact initial emulator snapshot, ROM hash, goal
+map, allowed maps, action timing, and discovery limit. `model_greedy` follows
+known improving edges without speculative lookahead, checks every prediction
+against the actual successor, and invalidates or corrects mismatches. It
+rediscovers from the current state if the known graph has no path. Battle
+states stop navigation. Cache hits, simulated actions, repairs and mismatches
+are reported per episode. The sampled graph is still conditioned on emulator
+state, and matching coordinates do not prove that other game state matches.
+
+The [cached experiment](research/navigation_experiments/cached-pallet-to-viridian/README.md)
+contains a measured cold/warm comparison. For another starting save, use
+`--start-state PATH` to load it directly; supply `--target` and
+`--allowed-maps` with the map names needed for that route. Graph discovery
+stops on the first reached tile of the target map, not a specific indoor tile.
+
+To request a goal from the expanded multi-query RAG planner, run with
+`--llm-objective 'Obtain the Boulder Badge'`. This requires the expanded index
+at `pokemon_rag/data/expanded-bulbapedia-clean` and a running local Ollama
+server. The exact planner response and retrieved documents are saved to
+`planner.json`; unsupported goals, unknown maps, invalid evidence and
+out-of-scope targets stop the run instead of being replaced by a manual goal.
+The included two live planner trials returned `INSUFFICIENT_CONTEXT`; they did
+not demonstrate successful LLM-directed navigation.
+
+PPO training optionally accepts a fixed graph potential via a top-level YAML
+section (use an absolute path to the graph generated above):
+
+```yaml
+navigation_shaping:
+  graph: /absolute/path/to/nav-cache/GRAPH_HASH.json
+  beta: 1.0
+```
+
+The wrapper uses the training `gamma`, zero potential on true termination,
+and retains the next-state potential on time-limit truncation. Unknown tiles
+have zero potential. The graph is fixed throughout each training run and its
+ROM hash must match. This adds shaping to the existing environment reward; it
+does not make a dynamic LLM goal policy-invariant or establish any PPO training
+improvement. Omit the section for unchanged baseline training.

@@ -10,7 +10,7 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 from tensorboard_callback import TensorboardCallback
 
-def make_env(rank, env_conf, seed=0):
+def make_env(rank, env_conf, seed=0, shaping=None):
     """
     Utility function for multiprocessed env.
     :param env_id: (str) the environment ID
@@ -20,7 +20,7 @@ def make_env(rank, env_conf, seed=0):
     """
     def _init():
         env = StreamWrapper(
-            RedGymEnv(env_conf), 
+            RedGymEnv(env_conf),
             stream_metadata = { # All of this is part is optional
                 "user": "v2-default", # choose your own username
                 "env_id": rank, # environment identifier
@@ -28,6 +28,12 @@ def make_env(rank, env_conf, seed=0):
                 "extra": "", # any extra text you put here will be displayed
             }
         )
+        if shaping:
+            import sys
+            sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+            from pokemon_game.reward_shaping import NavigationShaping
+            env = NavigationShaping(env, shaping["graph"], env_conf["gb_path"],
+                                    shaping["beta"], shaping["gamma"])
         env.reset(seed=(seed + rank))
         return env
     set_random_seed(seed)
@@ -63,7 +69,10 @@ if __name__ == "__main__":
     
     num_cpu = training_config["num_cpu"]
     seed = training_config["seed"]
-    env = SubprocVecEnv([make_env(i, env_config, seed=seed) for i in range(num_cpu)])
+    shaping = config.get("navigation_shaping")
+    if shaping:
+        shaping = {**shaping, "gamma": training_config["gamma"]}
+    env = SubprocVecEnv([make_env(i, env_config, seed=seed, shaping=shaping) for i in range(num_cpu)])
     
     checkpoint_callback = CheckpointCallback(save_freq=ep_length//2, save_path=sess_path,
                                      name_prefix="poke")

@@ -1,0 +1,78 @@
+{
+  "goal": {
+    "goal_type": "REACH_LOCATION",
+    "target": "Viridian City"
+  },
+  "llm_objective": null,
+  "allowed_maps": [
+    "PALLET_TOWN",
+    "ROUTE_1",
+    "VIRIDIAN_CITY"
+  ],
+  "cache_dir": "/home/lderahdo/ai-workspace/benchmark/PokemonRedExperiments/pokemon_game/data/cache-benchmark-20261127-cache",
+  "source_state_sha256": "210e08a72fd86d4f3fe40b80b68653c76131dd9d0e386d8147ab3d45a69f5380",
+  "start_state_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "checkpoint_sha256": null,
+  "checkpoint_name": null,
+  "start": {
+    "state": {
+      "map_id": 0,
+      "map_name": "PALLET_TOWN",
+      "location": "Pallet Town",
+      "x": 12,
+      "y": 12,
+      "party_size": 1,
+      "party_levels": [
+        6
+      ],
+      "party": [
+        {
+          "species_id": 177,
+          "species": "SQUIRTLE",
+          "level": 6,
+          "hp": 22,
+          "max_hp": 22
+        }
+      ],
+      "hp_fraction": 1.0,
+      "inventory": [],
+      "completed_events": [
+        "EVENT_GOT_STARTER",
+        "EVENT_GOT_OAKS_PARCEL",
+        "EVENT_OAK_GOT_PARCEL",
+        "EVENT_GOT_POKEDEX"
+      ],
+      "has_starter": true,
+      "has_oaks_parcel": false,
+      "delivered_oaks_parcel": true,
+      "badges": 0
+    },
+    "preparation_actions": 9,
+    "preparation_frames": 264
+  },
+  "setup_seconds": 0.37480140299976483,
+  "ppo_model_load_seconds": 2.61999957729131e-07,
+  "episodes_per_policy": 3,
+  "max_steps": 300,
+  "graph_limit": 1000,
+  "frame_timing": "8 pressed + 16 released",
+  "action_sets": {
+    "random": "all 7 actions",
+    "ppo": "all 7 actions, deterministic",
+    "map_greedy": "4 directional actions",
+    "tile_greedy": "4 directional actions",
+    "hierarchical_greedy": "4 directional actions"
+  },
+  "policies": [
+    "model_greedy",
+    "cached_greedy"
+  ],
+  "termination": "goal map, environment truncation, step limit, or battle for navigation-only greedy policies",
+  "limitations": [
+    "One fixed initial save and RNG state",
+    "Tile graph discovery uses speculative emulator search",
+    "Tile nodes collapse states at identical map coordinates",
+    "Battle handling is outside this navigation test"
+  ]
+}

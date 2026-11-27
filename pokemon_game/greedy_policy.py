@@ -27,3 +27,27 @@ def select_action(simulator, evaluate):
 def tile_value(distances, successor):
     distance = distances.get(position_key(successor))
     return None if distance is None else 1 / (1 + distance)
+
+
+def select_model_action(graph, position, distances):
+    """Choose an observed edge that strictly decreases directed distance."""
+    current = position_key(position)
+    distance = distances.get(current)
+    if distance is None:
+        raise RuntimeError("Current position has no known path to the target")
+    candidates = [(distances[target], action) for action, target in graph.edges.get(current, {}).items()
+                  if target in distances and distances[target] < distance]
+    if not candidates:
+        raise RuntimeError("No known improving transition")
+    return min(candidates)[1]
+
+
+def correct_transition(graph, source, action, predicted, observed, allowed_maps):
+    """Repair a prediction from live observations; battle edges remain unknown."""
+    target = position_key(observed)
+    if not observed.in_battle and target == predicted:
+        return False
+    graph.edges.get(source, {}).pop(action, None)
+    if not observed.in_battle and target != source and target[0] in allowed_maps:
+        graph.edges.setdefault(source, {})[action] = target
+    return True

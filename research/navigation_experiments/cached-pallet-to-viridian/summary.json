@@ -1,0 +1,20 @@
+{
+  "model_greedy": {
+    "episodes": 3,
+    "successes": 3,
+    "mean_actual_steps": 76.0,
+    "mean_simulated_actions": 758.6666666666666,
+    "mean_wall_seconds": 6.571205760000036,
+    "mean_unique_coordinates": 77.0,
+    "mean_repeated_states": 0.0
+  },
+  "cached_greedy": {
+    "episodes": 3,
+    "successes": 3,
+    "mean_actual_steps": 76.0,
+    "mean_simulated_actions": 304.0,
+    "mean_wall_seconds": 3.983517608666716,
+    "mean_unique_coordinates": 77.0,
+    "mean_repeated_states": 0.0
+  }
+}

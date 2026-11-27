@@ -1,0 +1,47 @@
+{
+  "random": {
+    "episodes": 3,
+    "successes": 0,
+    "mean_actual_steps": 300.0,
+    "mean_simulated_actions": 0.0,
+    "mean_wall_seconds": 0.43080557832824223,
+    "mean_unique_coordinates": 26.0,
+    "mean_repeated_states": 275.0
+  },
+  "map_greedy": {
+    "episodes": 3,
+    "successes": 0,
+    "mean_actual_steps": 300.0,
+    "mean_simulated_actions": 1200.0,
+    "mean_wall_seconds": 12.960378992002612,
+    "mean_unique_coordinates": 1.0,
+    "mean_repeated_states": 300.0
+  },
+  "tile_greedy": {
+    "episodes": 3,
+    "successes": 3,
+    "mean_actual_steps": 76.0,
+    "mean_simulated_actions": 2580.0,
+    "mean_wall_seconds": 17.964705938332674,
+    "mean_unique_coordinates": 77.0,
+    "mean_repeated_states": 0.0
+  },
+  "ppo": {
+    "episodes": 3,
+    "successes": 0,
+    "mean_actual_steps": 300.0,
+    "mean_simulated_actions": 0.0,
+    "mean_wall_seconds": 0.6062501433286039,
+    "mean_unique_coordinates": 68.0,
+    "mean_repeated_states": 233.0
+  },
+  "hierarchical_greedy": {
+    "episodes": 3,
+    "successes": 3,
+    "mean_actual_steps": 76.0,
+    "mean_simulated_actions": 2580.0,
+    "mean_wall_seconds": 17.37090785766001,
+    "mean_unique_coordinates": 77.0,
+    "mean_repeated_states": 0.0
+  }
+}

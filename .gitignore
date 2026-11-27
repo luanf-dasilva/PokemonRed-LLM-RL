@@ -16,6 +16,7 @@ venv*
 # Local training artifacts
 /v2/runs/
 /checkpoints/
+/pokemon_game/data/
 
 # Game ROMs
 *.gb

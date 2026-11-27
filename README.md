@@ -310,3 +310,39 @@ and Manhattan distance for coordinates on the same map. The graph is partial
 and optimistic: it does not model collision, quest locks, or dynamic `LAST_MAP`
 warps. It must not be treated as a verified traversable path or used as a
 complete greedy policy. Other goal types are explicitly unsupported for now.
+
+## Manual-goal navigation experiment
+
+The emulator-only simulator and directed tile graph can test a manually supplied
+Viridian City objective without the LLM. With the local ROM, generated pret
+lookups, and a compatible PPO checkpoint available:
+
+```sh
+python -m pokemon_game.evaluate_greedy \
+  --output pokemon_game/data/navigation-run --episodes 3 --max-steps 300
+```
+
+The runner derives one shared Pallet Town snapshot from `has_pokedex.state`;
+that save already has a starter and has delivered Oak's Parcel. Source saves and
+the ROM are not modified. `--rom`, `--source-state`, `--checkpoint`, and
+`--policies` can be provided explicitly. Results, generated saves, and discovered
+graphs stay in the ignored `pokemon_game/data/` directory. The protocol records
+input hashes, preparation, action sets, and timing.
+
+The simulator uses a second PyBoy instance for speculative actions and never
+calls `RedGymEnv.step()` on that instance. The committed run uses the normal
+environment step. Tile-graph discovery probes four directions from saved
+emulator snapshots and keeps observed directed transitions; the hierarchical
+variant combines map-transition distance with normalized distance to an
+observed exit. Discovery is multi-step emulator search: its simulated actions
+and wall time are included in the planning cost. The model is not a static
+collision extraction; it samples one state per map/tile, excludes battles, and
+does not establish general traversability under different RNG, NPC, or event
+states.
+
+Random and PPO can use all seven environment actions; the navigation-only
+greedy policies consider four directions and stop on battle. A 300-step run
+from a single emulator snapshot is a development test, not an independent
+estimate of success across game states or evidence that greedy lookahead
+outperforms a trained policy generally. Repeated policy seeds do not change the
+saved emulator RNG state.

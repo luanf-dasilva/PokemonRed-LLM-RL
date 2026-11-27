@@ -1,0 +1,278 @@
+"""Compare navigation policies from the same post-starter emulator state."""
+
+import argparse
+import hashlib
+import json
+import os
+import random
+import sys
+import time
+from pathlib import Path
+
+from pokemon_game.emulator_simulator import EmulatorSimulator
+from pokemon_game.greedy_policy import select_action, tile_value
+from pokemon_game.state_encoder import encode_state, load_lookups
+from pokemon_game.tile_graph import discover, distances_to_target, position_key
+from pokemon_game.value_function import HierarchicalNavigationValue, LocationValue
+
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_ROM = ROOT / "PokemonRed.gb"
+DEFAULT_SOURCE = ROOT / "has_pokedex.state"
+DEFAULT_CHECKPOINT = ROOT / "v2/runs/poke_125829120_steps.zip"
+POLICIES = ("random", "map_greedy", "tile_greedy", "hierarchical_greedy", "ppo")
+
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def prepare_start(rom, source, destination, lookups):
+    """Exit Oak's Lab using a post-starter save; leave source files unchanged."""
+    from pyboy import PyBoy
+    pyboy = PyBoy(str(rom), window="null")
+    pyboy.set_emulation_speed(0)
+    try:
+        with open(source, "rb") as stream:
+            pyboy.load_state(stream)
+        sim = EmulatorSimulator(pyboy)
+        for _ in range(20):
+            if sim.observe().map_id == lookups["maps"]["PALLET_TOWN"]["id"]:
+                break
+            if sim.observe().map_id != lookups["maps"]["OAKS_LAB"]["id"]:
+                raise ValueError("Source save is not in Oak's Lab or Pallet Town")
+            sim.step(0)
+        # Finish the transition animation before taking the shared starting state.
+        pyboy.tick(48, True)
+        state = encode_state(pyboy.memory, lookups)
+        if state["map_name"] != "PALLET_TOWN" or not state["has_starter"]:
+            raise ValueError("Could not prepare a post-starter Pallet Town state")
+        with open(destination, "wb") as stream:
+            pyboy.save_state(stream)
+        return {"state": state, "preparation_actions": sim.committed_actions,
+                "preparation_frames": sim.committed_frames + 48}
+    finally:
+        pyboy.stop(save=False)
+
+
+def run_episode(policy, seed, start_path, rom, model, lookups, map_edges, max_steps, output, graph_limit):
+    from pyboy import PyBoy
+    from red_gym_env_v2 import RedGymEnv
+
+    start_time = time.perf_counter()
+    config = {"headless": True, "save_final_state": False, "early_stop": False,
+        "action_freq": 24, "init_state": str(start_path), "max_steps": max_steps + 1,
+        "print_rewards": False, "save_video": False, "fast_video": True,
+        "session_path": output / "sessions" / f"{policy}-{seed}", "gb_path": str(rom),
+        "debug": False, "reward_scale": 0.5, "explore_weight": 0.25}
+    config["session_path"].mkdir(parents=True, exist_ok=True)
+    env = RedGymEnv(config)
+    env.pyboy.set_emulation_speed(0)
+    probe = None
+    try:
+        observation, _ = env.reset(seed=seed)
+        live = EmulatorSimulator(env.pyboy)
+        start_snapshot = live.snapshot()
+        if live.observe().map_id != 0:
+            raise RuntimeError("Shared start state did not load into Pallet Town")
+        rng = random.Random(seed)
+        maps_by_id = {v["id"]: name for name, v in lookups["maps"].items()}
+        map_value = LocationValue(lookups, map_edges)
+        allowed = {lookups["maps"][name]["id"] for name in ("PALLET_TOWN", "ROUTE_1", "VIRIDIAN_CITY")}
+        goal = {"goal_type": "REACH_LOCATION", "target": "Viridian City"}
+        discovery_info = None
+        if policy in {"map_greedy", "tile_greedy", "hierarchical_greedy"}:
+            probe_pyboy = PyBoy(str(rom), window="null")
+            probe_pyboy.set_emulation_speed(0)
+            probe = EmulatorSimulator(probe_pyboy)
+            probe.restore(start_snapshot)
+        planning_start = time.perf_counter()
+        distances = None
+        hierarchical = None
+        if policy in {"tile_greedy", "hierarchical_greedy"}:
+            before_count = env.step_count
+            before_seen = dict(env.seen_coords)
+            discovered = discover(probe, lookups["maps"]["VIRIDIAN_CITY"]["id"], allowed, max_nodes=graph_limit)
+            if live.snapshot() != start_snapshot or env.step_count != before_count or env.seen_coords != before_seen:
+                raise RuntimeError("Speculative discovery modified the live emulator or environment")
+            if discovered.target is None:
+                planning_seconds = time.perf_counter() - planning_start
+                return {"policy": policy, "seed": seed, "outcome": "no_path_discovered",
+                    "goal_reached": False, "actual_environment_steps": 0, "actual_emulator_frames": 0,
+                    "simulated_actions": probe.simulated_actions, "simulated_frames": probe.simulated_frames,
+                    "planning_seconds": planning_seconds, "execution_seconds": 0,
+                    "wall_seconds": time.perf_counter() - start_time, "unique_coordinates": 1,
+                    "repeated_states": 0, "battle_entered": False, "battle_steps": 0,
+                    "final_position": position_key(live.observe()), "actions": [],
+                    "discovery": {"nodes": discovered.explored_nodes,
+                        "edge_count": sum(map(len, discovered.edges.values())), "truncated": discovered.truncated,
+                        "start_distance": None, "planning_simulated_actions": probe.simulated_actions,
+                        "planning_simulated_frames": probe.simulated_frames}}
+            distances = distances_to_target(discovered)
+            if policy == "hierarchical_greedy":
+                hierarchical = HierarchicalNavigationValue(discovered)
+            discovery_info = {"nodes": discovered.explored_nodes, "edge_count": sum(map(len, discovered.edges.values())),
+                "truncated": discovered.truncated, "start_distance": distances.get(discovered.start),
+                "planning_simulated_actions": probe.simulated_actions, "planning_simulated_frames": probe.simulated_frames}
+            graph_file = output / f"{policy}-graph-{seed}.json"
+            graph_file.write_text(json.dumps({"start": discovered.start, "target": discovered.target,
+                "edges": [{"from": key, "actions": {str(a): dest for a, dest in edges.items()}}
+                          for key, edges in discovered.edges.items()]}, indent=2) + "\n")
+        planning_seconds = time.perf_counter() - planning_start
+        unique = {position_key(live.observe())}
+        repeated = 0
+        actions = []
+        outcome = "step_limit"
+        battle_steps = 0
+        battle_entered = False
+        start_execution = time.perf_counter()
+        for _ in range(max_steps):
+            current = live.observe()
+            if current.map_id == lookups["maps"]["VIRIDIAN_CITY"]["id"]:
+                outcome = "goal_reached"
+                break
+            if current.in_battle and policy in {"map_greedy", "tile_greedy", "hierarchical_greedy"}:
+                outcome = "battle"
+                break
+            if current.in_battle:
+                battle_steps += 1
+            if policy == "random":
+                action = rng.randrange(env.action_space.n)
+            elif policy == "ppo":
+                action, _ = model.predict(observation, deterministic=True)
+                action = int(action)
+            else:
+                probe.restore(live.snapshot())
+                if policy == "tile_greedy":
+                    score = lambda after: tile_value(distances, after)
+                elif policy == "hierarchical_greedy":
+                    score = hierarchical.evaluate
+                else:
+                    def score(after):
+                        if after.map_id not in allowed:
+                            return None
+                        try:
+                            return map_value.evaluate({"map_name": maps_by_id[after.map_id]}, goal)
+                        except (ValueError, KeyError):
+                            return None
+                try:
+                    action = select_action(probe, score)
+                except RuntimeError:
+                    outcome = "no_eligible_action"
+                    break
+            observation, _, _, truncated, _ = env.step(action)
+            actions.append(action)
+            current = live.observe()
+            battle_entered = battle_entered or current.in_battle
+            key = position_key(current)
+            if key in unique:
+                repeated += 1
+            unique.add(key)
+            if current.map_id == lookups["maps"]["VIRIDIAN_CITY"]["id"]:
+                outcome = "goal_reached"
+                break
+            if current.in_battle and policy in {"map_greedy", "tile_greedy", "hierarchical_greedy"}:
+                outcome = "battle"
+                break
+            if truncated:
+                outcome = "environment_truncated"
+                break
+        execution_seconds = time.perf_counter() - start_execution
+        return {"policy": policy, "seed": seed, "outcome": outcome,
+            "goal_reached": outcome == "goal_reached", "actual_environment_steps": len(actions),
+            "actual_emulator_frames": len(actions) * 24,
+            "simulated_actions": probe.simulated_actions if probe else 0,
+            "simulated_frames": probe.simulated_frames if probe else 0,
+            "planning_seconds": planning_seconds, "execution_seconds": execution_seconds,
+            "wall_seconds": time.perf_counter() - start_time,
+            "unique_coordinates": len(unique), "repeated_states": repeated,
+            "battle_entered": battle_entered, "battle_steps": battle_steps,
+            "final_position": position_key(live.observe()), "discovery": discovery_info, "actions": actions}
+    finally:
+        if probe is not None:
+            probe.pyboy.stop(save=False)
+        env.pyboy.stop(save=False)
+
+
+def _run(output, rom=DEFAULT_ROM, source=DEFAULT_SOURCE, checkpoint=DEFAULT_CHECKPOINT,
+         episodes=3, max_steps=300, graph_limit=1000, policies=POLICIES):
+    if episodes < 1 or max_steps < 1 or graph_limit < 1:
+        raise ValueError("Episode, step and graph limits must be positive")
+    if not policies or any(policy not in POLICIES for policy in policies) or len(set(policies)) != len(policies):
+        raise ValueError("Invalid or duplicated policy")
+    output, rom, source, checkpoint = map(lambda p: Path(p).resolve(), (output, rom, source, checkpoint))
+    if output.exists():
+        raise FileExistsError(f"Choose a new output directory: {output}")
+    output.mkdir(parents=True)
+    lookups = load_lookups(ROOT / "pokemon_rag/data/pret-pokered/processed/lookups.json")
+    graph = json.loads((ROOT / "pokemon_rag/data/pret-pokered/processed/map_graph.json").read_text())
+    started = time.perf_counter()
+    start_path = output / "pallet-post-starter.state"
+    start_info = prepare_start(rom, source, start_path, lookups)
+    setup_seconds = time.perf_counter() - started
+    # v2 reads events.json relative to its working directory.
+    sys.path.insert(0, str(ROOT / "v2"))
+    os.chdir(ROOT / "v2")
+    started = time.perf_counter()
+    model = None
+    if "ppo" in policies:
+        from stable_baselines3 import PPO
+        model = PPO.load(str(checkpoint), device="cpu")
+    model_load_seconds = time.perf_counter() - started
+    protocol = {"goal": {"goal_type": "REACH_LOCATION", "target": "Viridian City"},
+        "source_state_sha256": digest(source), "start_state_sha256": digest(start_path),
+        "rom_sha256": digest(rom), "checkpoint_sha256": digest(checkpoint) if model else None,
+        "checkpoint_name": checkpoint.name if model else None, "start": start_info, "setup_seconds": setup_seconds,
+        "ppo_model_load_seconds": model_load_seconds, "episodes_per_policy": episodes,
+        "max_steps": max_steps, "graph_limit": graph_limit, "frame_timing": "8 pressed + 16 released",
+        "action_sets": {"random": "all 7 actions", "ppo": "all 7 actions, deterministic",
+                        "map_greedy": "4 directional actions", "tile_greedy": "4 directional actions",
+                        "hierarchical_greedy": "4 directional actions"},
+        "policies": list(policies),
+        "termination": "goal map, environment truncation, step limit, or battle for navigation-only greedy policies",
+        "limitations": ["One fixed initial save and RNG state", "Tile graph discovery uses speculative emulator search",
+            "Tile nodes collapse states at identical map coordinates", "Battle handling is outside this navigation test"]}
+    (output / "protocol.json").write_text(json.dumps(protocol, indent=2) + "\n")
+    rows = []
+    for seed in range(episodes):
+        for policy in policies:
+            print(f"Running {policy}, episode {seed + 1}/{episodes}", flush=True)
+            row = run_episode(policy, seed, start_path, rom, model, lookups, graph["edges"], max_steps, output, graph_limit)
+            rows.append(row)
+            with (output / "results.jsonl").open("a") as stream:
+                stream.write(json.dumps(row) + "\n")
+            print(f"{policy}: {row['outcome']}, {row['actual_environment_steps']} actual, {row['simulated_actions']} simulated", flush=True)
+    summary = {}
+    for policy in policies:
+        data = [row for row in rows if row["policy"] == policy]
+        summary[policy] = {"episodes": len(data), "successes": sum(row["goal_reached"] for row in data),
+            "mean_actual_steps": sum(row["actual_environment_steps"] for row in data) / len(data),
+            "mean_simulated_actions": sum(row["simulated_actions"] for row in data) / len(data),
+            "mean_wall_seconds": sum(row["wall_seconds"] for row in data) / len(data),
+            "mean_unique_coordinates": sum(row["unique_coordinates"] for row in data) / len(data),
+            "mean_repeated_states": sum(row["repeated_states"] for row in data) / len(data)}
+    (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    print(json.dumps(summary, indent=2))
+
+
+def run(output, rom=DEFAULT_ROM, source=DEFAULT_SOURCE, checkpoint=DEFAULT_CHECKPOINT,
+        episodes=3, max_steps=300, graph_limit=1000, policies=POLICIES):
+    original_cwd, original_path = Path.cwd(), sys.path[:]
+    try:
+        return _run(output, rom, source, checkpoint, episodes, max_steps, graph_limit, policies)
+    finally:
+        os.chdir(original_cwd)
+        sys.path[:] = original_path
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--rom", type=Path, default=DEFAULT_ROM)
+    parser.add_argument("--source-state", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
+    parser.add_argument("--episodes", type=int, default=3)
+    parser.add_argument("--max-steps", type=int, default=300)
+    parser.add_argument("--graph-limit", type=int, default=1000)
+    parser.add_argument("--policies", nargs="+", choices=POLICIES, default=POLICIES)
+    args = parser.parse_args()
+    run(args.output, args.rom, args.source_state, args.checkpoint, args.episodes, args.max_steps, args.graph_limit, args.policies)

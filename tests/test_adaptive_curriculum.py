@@ -122,6 +122,26 @@ class CurriculumTests(unittest.TestCase):
             self.assertIsNone(archive.publish([info['curriculum_episode']], 1))
             self.assertFalse(archive.manifest.exists())
 
+    def test_goal_snapshots_are_excluded_and_progress_is_episode_local(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            initial = root / 'initial.state'
+            state(initial)
+            archive = SnapshotArchive(root / 'archive', excluded_goal_map=1)
+            worker = AdaptiveStarts(FakeEnv(initial), initial, archive.directory, 'initial')
+            worker.reset()
+            worker.unwrapped.pyboy.memory[0xD356] = 1
+            worker.unwrapped.pyboy.memory[0xD747] = 2
+            _, _, _, _, info = worker.step((3.0, 1, 0, 1))
+            candidate = info['curriculum_episode']
+            self.assertEqual(candidate['progress']['badge_delta'], 1)
+            self.assertEqual(candidate['progress']['raw_event_flags_gained'], 1)
+            self.assertEqual(info['curriculum_transition'], {'role': 'initial', 'source': 'initial'})
+            excluded = {**candidate, 'state': {**candidate['state'], 'map_id': 1}, 'original_return': 99}
+            published = archive.publish([excluded, candidate], 1)
+            self.assertEqual(published['eligible_episodes'], 1)
+            self.assertEqual(published['states']['best']['original_return'], 3)
+
     def test_shaping_reinitializes_after_adaptive_reset(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -141,6 +161,29 @@ class CurriculumTests(unittest.TestCase):
             _, info = env.reset()
             self.assertEqual(info['curriculum_start']['source'], 'best')
             self.assertAlmostEqual(env.previous_potential, 0.5)
+
+    def test_fixed_goal_terminates_and_rejects_already_completed_start(self):
+        from pokemon_game.curriculum_experiment import FixedGoal
+
+        with tempfile.TemporaryDirectory() as directory:
+            initial = Path(directory) / 'initial.state'
+            state(initial)
+            class GoalEnv(FakeEnv):
+                def step(self, action):
+                    obs, reward, terminated, truncated, info = super().step(action)
+                    self.pyboy.memory[0xD35E] = 1
+                    return obs, reward, terminated, truncated, info
+            env = FixedGoal(GoalEnv(initial), 1)
+            env.reset()
+            _, _, terminated, truncated, info = env.step((1.0, 2, 0, 1))
+            self.assertTrue(info['goal_reached'])
+            self.assertTrue(terminated)
+            self.assertFalse(truncated)
+            data = json.loads(initial.read_text())
+            data['map'] = 1
+            initial.write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError, 'already on the goal'):
+                env.reset()
 
 
 if __name__ == '__main__':

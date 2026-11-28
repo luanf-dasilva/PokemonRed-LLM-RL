@@ -6,12 +6,14 @@ import os
 import sys
 import time
 from pathlib import Path
+from collections import Counter
 
 os.environ['OMP_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 import torch
+import gymnasium as gym
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.vec_env import SubprocVecEnv
@@ -30,11 +32,34 @@ def append(path, record):
         stream.write(json.dumps(record, allow_nan=False) + '\n')
 
 
-def make_env(config, archive_dir, role):
+class FixedGoal(gym.Wrapper):
+    """Apply the same map-goal termination to control and adaptive runs."""
+    def __init__(self, env, goal_map):
+        super().__init__(env)
+        self.goal_map = goal_map
+
+    def reset(self, **kwargs):
+        obs, info = self.env.reset(**kwargs)
+        if self.unwrapped.pyboy.memory[0xD35E] == self.goal_map:
+            raise ValueError('Starting snapshot is already on the goal map')
+        return obs, info
+
+    def step(self, action):
+        obs, reward, terminated, truncated, info = self.env.step(action)
+        memory = self.unwrapped.pyboy.memory
+        success = memory[0xD35E] == self.goal_map and memory[0xD057] == 0
+        info = dict(info)
+        info['goal_reached'] = success
+        return obs, reward, terminated or success, truncated and not success, info
+
+
+def make_env(config, archive_dir, role, goal_map=None):
     def create():
         from red_gym_env_v2 import RedGymEnv
         env = RedGymEnv(config)
         env.pyboy.set_emulation_speed(0)
+        if goal_map is not None:
+            env = FixedGoal(env, goal_map)
         return AdaptiveStarts(env, config['init_state'], archive_dir, role)
     return create
 
@@ -45,12 +70,13 @@ def evaluate(model, env, max_steps):
     reward_total = 0.0
     for steps in range(1, max_steps + 1):
         action, _ = model.predict(obs, deterministic=True)
-        obs, reward, terminated, truncated, _ = env.step(int(action))
+        obs, reward, terminated, truncated, info = env.step(int(action))
         reward_total += float(reward)
         if terminated or truncated:
             break
     return {'steps': steps, 'original_return': reward_total,
             'start': reset_info['curriculum_start'], 'final': state_info(env.unwrapped.pyboy.memory),
+            'goal_reached': bool(info.get('goal_reached', False)),
             'badges': int(env.unwrapped.get_badges()),
             'evaluation_wall_seconds': time.perf_counter() - started}
 
@@ -62,6 +88,7 @@ class Recorder(BaseCallback):
         self.eval_envs, self.max_steps, self.eval_every = eval_envs, max_steps, eval_every
         self.started, self.rollouts, self.candidates = started, 0, []
         self.completed = 0
+        self.transitions = Counter()
 
     def record_eval(self):
         for label, env in self.eval_envs:
@@ -78,6 +105,8 @@ class Recorder(BaseCallback):
 
     def _on_step(self):
         for info in self.locals['infos']:
+            transition = info['curriculum_transition']
+            self.transitions[(transition['role'], transition['source'])] += 1
             candidate = info.get('curriculum_episode')
             if candidate is not None:
                 candidate['timesteps'] = self.num_timesteps
@@ -93,7 +122,10 @@ class Recorder(BaseCallback):
                      if self.condition == 'adaptive' else None)
         append(self.output / 'training.jsonl', {'rollout': self.rollouts, 'timesteps': self.num_timesteps,
             'elapsed_wall_seconds': time.perf_counter() - self.started, 'completed_episodes': self.completed,
-            'rollout_episodes': len(self.candidates), 'published': published})
+            'rollout_episodes': len(self.candidates),
+            'transition_counts': [{'role': role, 'source': source, 'count': count}
+                                  for (role, source), count in sorted(self.transitions.items())],
+            'published': published})
         self.candidates = []
         print(f'Rollout {self.rollouts}: {self.num_timesteps} transitions', flush=True)
 
@@ -108,6 +140,8 @@ def run(args):
         raise ValueError('Batch size must divide the rollout size')
     if args.max_steps < 1 or args.eval_every < 1:
         raise ValueError('Invalid episode or evaluation interval')
+    if args.goal_map_id is not None and not 0 <= args.goal_map_id <= 255:
+        raise ValueError('Goal map ID must be a byte')
     output, start, rom = args.output.resolve(), args.start_state.resolve(), args.rom.resolve()
     if output.exists():
         raise FileExistsError(f'Choose a new output directory: {output}')
@@ -115,7 +149,7 @@ def run(args):
     if any(digest(path) == digest(start) for _, path in eval_states[1:]):
         raise ValueError('Held-out save must differ from the initial save')
     output.mkdir(parents=True)
-    archive = SnapshotArchive(output / 'archive')
+    archive = SnapshotArchive(output / 'archive', excluded_goal_map=args.goal_map_id)
     started = time.perf_counter()
     torch.set_num_threads(1)
     config = {'headless': True, 'save_final_state': False, 'early_stop': False, 'action_freq': 24,
@@ -131,6 +165,8 @@ def run(args):
         'total_timesteps': args.workers * args.n_steps * args.rollouts, 'batch_size': args.batch_size,
         'epochs': 1, 'gamma': 0.997, 'learning_rate': 0.0003, 'ent_coef': 0.01,
         'episode_limit': args.max_steps, 'policy': 'MultiInputPolicy from scratch',
+        'goal_map_id': args.goal_map_id,
+        'goal_exclusion': 'all final snapshots on goal map excluded' if args.goal_map_id is not None else None,
         'base_rewards': config['rewards'], 'rom_sha256': digest(rom), 'initial_sha256': digest(start),
         'eval_sha256': {label: digest(path) for label, path in eval_states},
         'selection': 'highest and lowest original episode return among eligible completions in the last rollout',
@@ -147,10 +183,10 @@ def run(args):
     env = None
     eval_envs = []
     try:
-        env = SubprocVecEnv([make_env(config, archive.directory, role) for role in roles], start_method='forkserver')
+        env = SubprocVecEnv([make_env(config, archive.directory, role, args.goal_map_id) for role in roles], start_method='forkserver')
         for label, path in eval_states:
             eval_config = {**config, 'init_state': str(path)}
-            eval_envs.append((label, make_env(eval_config, archive.directory, 'initial')()))
+            eval_envs.append((label, make_env(eval_config, archive.directory, 'initial', args.goal_map_id)()))
         model = PPO('MultiInputPolicy', env, n_steps=args.n_steps, batch_size=args.batch_size, n_epochs=1,
                     gamma=0.997, learning_rate=0.0003, ent_coef=0.01, seed=args.seed, device='cpu', verbose=0)
         recorder = Recorder(output, archive, args.condition, eval_envs, args.max_steps, args.eval_every, started)
@@ -179,6 +215,7 @@ def main():
     parser.add_argument('--rollouts', type=int, default=61)
     parser.add_argument('--max-steps', type=int, default=300)
     parser.add_argument('--eval-every', type=int, default=5)
+    parser.add_argument('--goal-map-id', type=int, help='Optional fixed map goal; goal snapshots are excluded')
     run(parser.parse_args())
 
 

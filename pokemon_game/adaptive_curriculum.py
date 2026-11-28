@@ -15,7 +15,7 @@ from pathlib import Path
 import gymnasium as gym
 import numpy as np
 
-from pokemon_game.state_encoder import MAP_ID, X_COORD, Y_COORD, PARTY_COUNT
+from pokemon_game.state_encoder import MAP_ID, X_COORD, Y_COORD, PARTY_COUNT, BADGES, EVENT_FLAGS
 from pokemon_game.emulator_simulator import BATTLE_FLAG
 
 
@@ -54,17 +54,27 @@ def atomic_write(path, content):
     os.replace(temporary, path)
 
 
+def progress_info(memory):
+    """Snapshot raw event flags and party levels for inherited/progress accounting."""
+    return {'badges': memory[BADGES].bit_count(),
+            'event_flags': [memory[address] for address in range(EVENT_FLAGS, 0xD87E)],
+            'party_levels': [memory[0xD18C + i * 44] for i in range(memory[PARTY_COUNT])]}
+
+
 class SnapshotArchive:
     """Publish snapshots together through one atomic manifest replacement."""
-    def __init__(self, directory):
+    def __init__(self, directory, excluded_goal_map=None):
         self.directory = Path(directory).resolve()
         self.directory.mkdir(parents=True, exist_ok=True)
         self.manifest = self.directory / 'current.json'
+        self.excluded_goal_map = excluded_goal_map
 
     def publish(self, candidates, rollout):
         eligible = [candidate for candidate in candidates if candidate.get('eligible')
                     and isinstance(candidate.get('snapshot'), bytes)
-                    and candidate['snapshot'] and math.isfinite(candidate['original_return'])]
+                    and candidate['snapshot'] and math.isfinite(candidate['original_return'])
+                    and (self.excluded_goal_map is None or
+                         candidate.get('state', {}).get('map_id') != self.excluded_goal_map)]
         if not eligible:
             return None
         # Stable ties select the first completion in worker/step order.
@@ -144,6 +154,8 @@ class AdaptiveStarts(gym.Wrapper):
                                            base.recent_screens.shape[2], axis=2)
         observation['screens'] = base.recent_screens.copy()
         self.original_return, self.steps, self.source = 0.0, 0, source
+        self.initial_state_info = initial
+        self.start_progress = progress_info(base.pyboy.memory)
         info = dict(info)
         info['curriculum_start'] = {'role': self.role, 'source': source, **initial}
         return observation, info
@@ -155,12 +167,22 @@ class AdaptiveStarts(gym.Wrapper):
         self.original_return += float(reward)
         self.steps += 1
         info = dict(info)
+        info['curriculum_transition'] = {'role': self.role, 'source': self.source}
         if terminated or truncated:
             candidate = {'original_return': self.original_return, 'episode_steps': self.steps,
                          'start_role': self.role, 'start_source': self.source,
+                         'start_state': self.initial_state_info,
                          'terminated': bool(terminated), 'truncated': bool(truncated)}
             try:
                 candidate['state'] = state_info(self.unwrapped.pyboy.memory)
+                end = progress_info(self.unwrapped.pyboy.memory)
+                start = self.start_progress
+                candidate['progress'] = {
+                    'start_badges': start['badges'], 'end_badges': end['badges'],
+                    'badge_delta': end['badges'] - start['badges'],
+                    'start_party_levels': start['party_levels'], 'end_party_levels': end['party_levels'],
+                    'raw_event_flags_gained': sum((b & ~a).bit_count() for a, b in zip(start['event_flags'], end['event_flags'])),
+                    'raw_event_flags_lost': sum((a & ~b).bit_count() for a, b in zip(start['event_flags'], end['event_flags']))}
                 buffer = io.BytesIO()
                 self.unwrapped.pyboy.save_state(buffer)
                 candidate['snapshot'] = buffer.getvalue()

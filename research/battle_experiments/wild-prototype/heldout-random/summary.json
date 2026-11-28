@@ -1,0 +1,10 @@
+{
+  "episodes": 6,
+  "outcomes": {
+    "escaped": 5,
+    "victory": 1
+  },
+  "mean_abstract_actions": 3.3333333333333335,
+  "mean_emulator_frames": 1176.0,
+  "mean_controller_inputs": 23.333333333333332
+}

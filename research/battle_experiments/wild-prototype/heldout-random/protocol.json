@@ -1,0 +1,13 @@
+{
+  "policy": "random_legal",
+  "repetitions_per_scenario": 3,
+  "seed": 0,
+  "max_abstract_actions": 30,
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "archive_manifest_sha256": "f3e86bd691d3df25d2cdbf4c97420a9955a568df6c965d6b8f08fc35202c5e41",
+  "limitations": [
+    "Snapshots may share a parent encounter or exploration save",
+    "Repetitions reload identical emulator RNG states",
+    "Policies are hand-written, not trained PPO agents"
+  ]
+}

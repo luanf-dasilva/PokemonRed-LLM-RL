@@ -1,0 +1,9 @@
+{
+  "episodes": 5,
+  "outcomes": {
+    "victory": 5
+  },
+  "mean_abstract_actions": 2.4,
+  "mean_emulator_frames": 1035.2,
+  "mean_controller_inputs": 18.6
+}

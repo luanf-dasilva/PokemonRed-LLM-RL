@@ -407,3 +407,12 @@ It records the selected states and compares against an otherwise matched
 fixed-start control. The implementation, limitations, smoke results and run
 commands are described in the [curriculum experiment](research/ppo_experiments/curriculum-smoke/README.md).
 The curriculum is separate from the running fixed-goal shaping comparison.
+Optional fixed-goal runs exclude already-completed snapshots, and logs record
+starting and ending progress as well as transitions by reset source.
+
+## Wild battle prototype
+
+The separate battle environment captures stable command-menu snapshots and
+exposes four move actions plus RUN. The [battle experiment record](research/battle_experiments/wild-prototype/README.md)
+describes the small archive, controller costs, fixed-policy demonstration,
+supported mechanics and a separate PPO runner for later training.

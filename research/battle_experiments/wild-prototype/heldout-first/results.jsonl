@@ -1,0 +1,2 @@
+{"scenario": 0, "repetition": 0, "outcome": "victory", "terminated": true, "truncated": false, "abstract_actions": 4, "actions": [0, 0, 0, 0], "emulator_frames": 1624, "controller_inputs": 30, "reward": 2.0, "wall_seconds": 0.094688141000006}
+{"scenario": 1, "repetition": 0, "outcome": "victory", "terminated": true, "truncated": false, "abstract_actions": 3, "actions": [0, 0, 0], "emulator_frames": 1344, "controller_inputs": 24, "reward": 1.727272727272727, "wall_seconds": 0.0580600979992596}

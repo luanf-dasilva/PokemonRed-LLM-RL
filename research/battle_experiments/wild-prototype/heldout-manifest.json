@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "scenarios": [
+    {
+      "snapshot": "battle_0001.state",
+      "snapshot_sha256": "11d3fd8c4ac22e2473ab9770b546037353f8e20fd189a412e2cf33eee33ed760",
+      "battle_type": "wild",
+      "map_id": 12,
+      "location": "ROUTE_1",
+      "player": {
+        "species_id": 177,
+        "hp": 22,
+        "status": 0,
+        "type_ids": [
+          21,
+          21
+        ],
+        "moves": [
+          33,
+          39,
+          0,
+          0
+        ],
+        "level": 6,
+        "max_hp": 22,
+        "attack": 11,
+        "defense": 13,
+        "speed": 11,
+        "special": 11,
+        "pp": [
+          35,
+          30,
+          0,
+          0
+        ],
+        "species": "SQUIRTLE",
+        "hp_fraction": 1.0
+      },
+      "opponent": {
+        "species_id": 165,
+        "hp": 15,
+        "status": 0,
+        "type_ids": [
+          0,
+          0
+        ],
+        "moves": [
+          33,
+          39,
+          0,
+          0
+        ],
+        "level": 3,
+        "max_hp": 15,
+        "attack": 9,
+        "defense": 8,
+        "speed": 10,
+        "special": 6,
+        "pp": [
+          35,
+          30,
+          0,
+          0
+        ],
+        "species": "RATTATA",
+        "hp_fraction": 1.0
+      },
+      "provenance": {
+        "kind": "recorded_exploration_trace",
+        "trace_sha256": "e400e1c6f8706b3e8bf7cc5c6a5260452883aa59ec21cd2680a81ff02201a9f8",
+        "policy": "ppo",
+        "seed": 0,
+        "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+        "wait_frames": 11,
+        "wait_before_action": 65,
+        "exploration_actions": 72,
+        "capture_emulator_frames": 2355,
+        "capture_controller_inputs": 81
+      },
+      "source_archive": "battle-v2-11"
+    },
+    {
+      "snapshot": "battle_0002.state",
+      "snapshot_sha256": "b21c51c7950fbded6dca5ab2f319289fddd9d7aad060c5865945dee46231ac49",
+      "battle_type": "wild",
+      "map_id": 12,
+      "location": "ROUTE_1",
+      "player": {
+        "species_id": 177,
+        "hp": 22,
+        "status": 0,
+        "type_ids": [
+          21,
+          21
+        ],
+        "moves": [
+          33,
+          39,
+          0,
+          0
+        ],
+        "level": 6,
+        "max_hp": 22,
+        "attack": 11,
+        "defense": 13,
+        "speed": 11,
+        "special": 11,
+        "pp": [
+          35,
+          30,
+          0,
+          0
+        ],
+        "species": "SQUIRTLE",
+        "hp_fraction": 1.0
+      },
+      "opponent": {
+        "species_id": 36,
+        "hp": 15,
+        "status": 0,
+        "type_ids": [
+          0,
+          2
+        ],
+        "moves": [
+          16,
+          0,
+          0,
+          0
+        ],
+        "level": 3,
+        "max_hp": 15,
+        "attack": 8,
+        "defense": 7,
+        "speed": 8,
+        "special": 7,
+        "pp": [
+          35,
+          0,
+          0,
+          0
+        ],
+        "species": "PIDGEY",
+        "hp_fraction": 1.0
+      },
+      "provenance": {
+        "kind": "recorded_exploration_trace",
+        "trace_sha256": "e400e1c6f8706b3e8bf7cc5c6a5260452883aa59ec21cd2680a81ff02201a9f8",
+        "policy": "ppo",
+        "seed": 0,
+        "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+        "wait_frames": 14,
+        "wait_before_action": 65,
+        "exploration_actions": 128,
+        "capture_emulator_frames": 3702,
+        "capture_controller_inputs": 137
+      },
+      "source_archive": "battle-v2-14"
+    }
+  ]
+}

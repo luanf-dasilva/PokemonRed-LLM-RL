@@ -1,0 +1,56 @@
+{
+  "format_version": 1,
+  "source": "greedy_expert",
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "start_sha256": "c65db7edd0f14e4a0ee33f5cf3598348d07f443d90aee30b0c18f15b94d06346",
+  "transitions": 16,
+  "episodes": 1,
+  "transition_hashes": [
+    "a1a0e6192c1907533c6c843929efd439d3b7ef4b6e2571072d6f8fdc598fac0e",
+    "a3dee57004278d0e23ccb1b7da459700aa0cbb5471474cd7f517c7c43fd28c3f",
+    "8e0133a568889291fd29731070de307a1fa0bb6eb481228814588b235bcac7a9",
+    "06a1ca434e28d67ce08de72e33bfbdee72fad2a3ce5fc1f230fa54b87c26f251",
+    "6e3d363e0414bd4868c91b8efa05d560091122b28797def80c7d9124467c43d3",
+    "eb4a0c8f2804a1fea463b7af45044796f885d70486c3ac9e19a37f034d19ef57",
+    "85052fc56db4ecda37bd785873c55de69e5cc2c82d8df3d1b0e2dd523fa6119d",
+    "6e61e3ce6c90b38b5474fb1a1e590cd259f967166b8be4fd4ce7f8976a2810ae",
+    "9bd3fd192341b91f0e2d874fe496090a148874a326814e5135351e10da6faf79",
+    "c5dd96824657caac2b70ea5442135c419c8da1a0f277b211721e1303aea375ad",
+    "48fa63d409e4c8dd8bf2de2d6507748e4e378c49da3c86bad940dc855232037e",
+    "bb55d035f0ac89de5df809a12b72c9fc64a9863593ae123f8dfd49e6e61a6a30",
+    "d810694b8a2d6272f817900dfa21bf8405c24587af6ec999471fd17e619a53a8",
+    "cbdd267f00d7083cc9f7ec6d31c7edf84d668ebc07b0dde733033fdb499c018d",
+    "fda6028e128f3562b106f45262f505048f6d552d4de73bb6322d317ae0cd3079",
+    "91a85bcfae4a831b1086ae07f05ab0f8726f8caae7b6cc0ad52c9622349c3a44"
+  ],
+  "snapshots": [
+    {
+      "file": "000000-episode-start.state",
+      "sha256": "de479d42be1be079315b2f63a5238c5448b9cced9d19fb7a0157c2d4c371271a",
+      "label": "episode-start",
+      "transition": 0,
+      "episode": 0
+    },
+    {
+      "file": "000001-milestone.state",
+      "sha256": "b4b2e42552d3a0d2ca4de16ad092acc246d396468a794d8bae9551b48da5951a",
+      "label": "milestone",
+      "transition": 16,
+      "episode": 0
+    },
+    {
+      "file": "000002-episode-end.state",
+      "sha256": "b4b2e42552d3a0d2ca4de16ad092acc246d396468a794d8bae9551b48da5951a",
+      "label": "episode-end",
+      "transition": 16,
+      "episode": 0
+    }
+  ],
+  "outcome": "goal_reached",
+  "goal_map_id": 41,
+  "graph_sha256": "3e2040297635c9e33c12527459453e68c41af2b6714d37150db3339688a8c834",
+  "simulated_actions": 0,
+  "prediction_mismatches": 0,
+  "exact_graph_start": true,
+  "total_original_reward": 0.2
+}

@@ -1,0 +1,27 @@
+training:
+  workers: 32
+  rollout_steps: 512
+  batch_size: 512
+  ppo_epochs: 1
+  gamma: 0.997
+  learning_rate: 0.0003
+  ent_coef: 0.01
+  rollouts: 61
+  max_episode_steps: 300
+  seed: 0
+
+imitation_learning:
+  enabled: true
+  initial_pretraining:
+    enabled: true
+    epochs: 10
+  periodic_training:
+    enabled: true
+    interval_rollouts: 10
+    epochs: 3
+  batch_size: 512
+  learning_rate: 0.0001
+  sources:
+    human: true
+    greedy_expert: true
+    successful_ppo: false

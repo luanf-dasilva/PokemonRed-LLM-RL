@@ -1,0 +1,68 @@
+{
+  "format_version": 1,
+  "source": "greedy_expert",
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "start_sha256": "c65db7edd0f14e4a0ee33f5cf3598348d07f443d90aee30b0c18f15b94d06346",
+  "transitions": 28,
+  "episodes": 1,
+  "transition_hashes": [
+    "b8baa30aae236e077ca24600e1435bdf7bbb51202d7ad79d530c472945c51371",
+    "4a17439a0b4e5c9087d4ce70c22bfb390715dca25359e284a31c69b34af55401",
+    "a3a4077d3ba29772223c20e73980be72dc45b30205400084c445281ed14d8a63",
+    "14d03f41b6629db6ffef04ce86aa87da312e115cde5b8e1e6edc2b1fd63d1654",
+    "44ba82451c7f1278c497508f4a92414f0059d5479064284947abc3141b67d472",
+    "e622299f01ba5b600808d33d25cf9a93c9fdea7e720b3eb972fca5afea6e7722",
+    "86957298651c871a48b3e6c439a7afed366a034eb53da67ad8768ae7147b0239",
+    "54757cfb35f0890d4746388d0bc1fd9d91450f2ac30c24fce4a7d4ca33da0108",
+    "deb80da1003a1a8f964bc9aa0efbcd9bc06acff246959e5d73918be109446af6",
+    "b49bad06194c6fe72e361cf366f9de00c93a5a02dae5f70f5c54810e8dd96e12",
+    "bad37ec5f1fa326023cd400c8d692ebe3dc03a8ec1d426370d24a1b04ca475a9",
+    "5408486275a9af50266cced27759e8b862c5608793b59d9af413f3c7710ff680",
+    "5c7e7c1c54e0f717bbd13c98621442f723ddb8de6167b8d1f3d0bbce41b52ffe",
+    "900337df17fec0bf14810c518d8aa8b19246db8dbe76aef204e5a8c08abd37dc",
+    "22eee275daae2c44e98fe6c486e23850b7c416143861afd7ca044332b7e81328",
+    "a659ed502d0b731a04aae47842391da64e20151a6acc145edfdd19ae4b2628dd",
+    "2adcce81312f135d1cfd05f69c4c2524d506da0fb9cab0a6f931feaa421a9981",
+    "82a9391ff9236cfdc9c44f620a636a0da2c77a958407e55a7a99a09ee27de0e8",
+    "7219db4b946386172e3a1e3015a12f0b36d5e9a36a7bc00d12d8a90512fdb36f",
+    "9cca4a9b163b26bcf084a2567b864276af75691ca00f0b0a47f7848e963e4492",
+    "21b2bf7a5551e963dfd4ffc6b7a8f262a4dafd833520d96981bfc4a7ab006b4e",
+    "0fe9c55779149ed04106e05cad6ad908a222dc3ba94cfb56fc137d5b102d4da5",
+    "647c04b38cb4e631a7dfe48ccb48432c223b5eeb4d368df3c057cb93ac5e0fd0",
+    "0f3246371c66bddbd4ebd9412c09993eae580d04b4d8ce3298130ac34340e139",
+    "434c50ee862c3c5549446d06b51bfaeaaa65e70595949ad5fa18520258495076",
+    "91c82ae406cf17128ad5a5830ca4dd0417cddd52285e2580e29d993be8079fb1",
+    "9899216bc5ef0b73ea6eb2829470306197e50ab94042075e1c838ef81963cec9",
+    "b5ecf18784ecb062f668626588868908665580d659fd4bbd33b2d05ef5c7759e"
+  ],
+  "snapshots": [
+    {
+      "file": "000000-episode-start.state",
+      "sha256": "de479d42be1be079315b2f63a5238c5448b9cced9d19fb7a0157c2d4c371271a",
+      "label": "episode-start",
+      "transition": 0,
+      "episode": 0
+    },
+    {
+      "file": "000001-milestone.state",
+      "sha256": "bc50debfc3aa1e96ec0827c3c012bac8a06098538f39fa21876c6345a8e01eac",
+      "label": "milestone",
+      "transition": 28,
+      "episode": 0
+    },
+    {
+      "file": "000002-episode-end.state",
+      "sha256": "bc50debfc3aa1e96ec0827c3c012bac8a06098538f39fa21876c6345a8e01eac",
+      "label": "episode-end",
+      "transition": 28,
+      "episode": 0
+    }
+  ],
+  "outcome": "goal_reached",
+  "goal_map_id": 42,
+  "graph_sha256": "a50c27cb2fc680df95d562c950e5744d2f8b12b020ec88e18fea4e673e6e4a41",
+  "simulated_actions": 0,
+  "prediction_mismatches": 0,
+  "exact_graph_start": true,
+  "total_original_reward": 0.35000000000000003
+}

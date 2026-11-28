@@ -416,3 +416,11 @@ The separate battle environment captures stable command-menu snapshots and
 exposes four move actions plus RUN. The [battle experiment record](research/battle_experiments/wild-prototype/README.md)
 describes the small archive, controller costs, fixed-policy demonstration,
 supported mechanics and a separate PPO runner for later training.
+
+## Demonstrations and imitation
+
+The Gym-based recorder supports human play and model-based expert trajectories.
+Offline behavioral cloning and optional imitation updates between PPO rollout
+cycles use the same recorded observations and actions. See the [demonstration
+experiment record](research/imitation_experiments/greedy-smoke/README.md) for
+controls, data format, reproduction commands, smoke results and limitations.

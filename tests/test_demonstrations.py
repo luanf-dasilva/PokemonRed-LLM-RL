@@ -96,10 +96,86 @@ class RecorderDatasetTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Mixed or unlabeled goals'):
                 DemonstrationDataset([first, second])
             self.assertEqual(len(DemonstrationDataset([first, second], allow_mixed_goals=True)), 4)
+            conditioned = DemonstrationDataset([first, second], goal_conditioned=True)
+            self.assertEqual(conditioned[0][0]['goal_map'].argmax(), 1)
+            self.assertEqual(conditioned[2][0]['goal_map'].argmax(), 2)
+            self.assertEqual(conditioned[2][1]['goal_map'].sum(), 1)
             from pokemon_game.demonstrations.behavioral_cloning import validate_split
             a, b = DemonstrationDataset([first]), DemonstrationDataset([first])
             with self.assertRaisesRegex(ValueError, 'share an exact starting snapshot'):
                 validate_split(a, b)
+
+    def test_goal_conditioning_changes_observation_and_terminates_at_selected_goal(self):
+        from pokemon_game.goal_conditioning import GoalConditionedMap
+        env = GoalConditionedMap(FakeEnv(), [1, 2])
+        obs, info = env.reset(seed=7, options={'goal_map_id': 2})
+        self.assertEqual(info['goal_map_id'], 2)
+        self.assertEqual(obs['goal_map'].argmax(), 2)
+        obs, _, terminated, truncated, info = env.step(0)
+        self.assertFalse(terminated or truncated)
+        self.assertFalse(info['goal_reached'])
+        obs, info = env.reset(options={'goal_map_id': 1})
+        self.assertEqual(obs['goal_map'].argmax(), 1)
+        obs, _, terminated, truncated, info = env.step(0)
+        self.assertTrue(terminated)
+        self.assertFalse(truncated)
+        self.assertTrue(info['goal_reached'])
+        with self.assertRaisesRegex(ValueError, 'unavailable or already satisfied'):
+            GoalConditionedMap(FakeEnv(), [0]).reset(options={'goal_map_id': 0})
+
+    def test_dagger_records_expert_label_not_behavior_action(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'dagger'
+            recorder = DemonstrationRecorder(FakeEnv(), path, LOOKUPS, 'dagger_expert', start_sha256='different')
+            recorder.manifest['goal_map_id'] = 1
+            recorder.reset()
+            recorder.step_labeled(behavior_action=3, expert_action=2)
+            recorder.finish('expert_abstained')
+            recorder.close()
+            dataset = DemonstrationDataset([path])
+            _, _, label, metadata = dataset[0]
+            self.assertEqual(label, 2)
+            self.assertEqual(metadata['behavior_action'], 3)
+            self.assertEqual(metadata['behavior_source'], 'learner')
+
+    def test_dagger_oracle_abstains_after_invalidating_wrong_edge(self):
+        from pokemon_game.demonstrations.dagger import ExpertOracle
+        from pokemon_game.emulator_simulator import Position
+        from pokemon_game.tile_graph import Discovery
+
+        class Probe:
+            def restore(self, snapshot): pass
+            def step(self, action, simulated=False): return Position(0, 0, 0, False)
+
+        graph = Discovery({(0, 0, 0): {2: (1, 0, 0)}}, (0, 0, 0), (1, 0, 0), 2, False)
+        oracle = ExpertOracle(Probe(), graph, {0, 1}, 1, max_nodes=10, max_discoveries=0)
+        self.assertIsNone(oracle.label(b'state', Position(0, 0, 0, False)))
+        self.assertEqual(oracle.mismatches, 1)
+        self.assertEqual(graph.edges[(0, 0, 0)], {})
+
+    def test_dagger_recovery_verifies_a_known_edge_before_labeling(self):
+        from pokemon_game.demonstrations.dagger import ExpertOracle
+        from pokemon_game.emulator_simulator import Position
+        from pokemon_game.tile_graph import Discovery
+
+        class Probe:
+            def __init__(self): self.position, self.calls = (40, 0, 0), 0
+            def snapshot(self): return self.position
+            def restore(self, snapshot): self.position = snapshot
+            def step(self, action, simulated=False):
+                self.calls += 1
+                if self.position == (40, 0, 0) and action == 0:
+                    self.position = (0, 1, 0)
+                elif self.position == (0, 1, 0) and action == 2:
+                    self.position = (1, 0, 0)
+                return Position(*self.position, False)
+
+        graph = Discovery({(0, 1, 0): {2: (1, 0, 0)}}, (0, 1, 0), (1, 0, 0), 2, False)
+        probe = Probe()
+        oracle = ExpertOracle(probe, graph, {0, 1, 40}, 1, max_nodes=10, max_discoveries=0)
+        self.assertEqual(oracle.label((40, 0, 0), Position(40, 0, 0, False)), 0)
+        self.assertEqual(oracle.recovery_labels, 1)
+        self.assertGreater(probe.calls, 1)
 
     def test_incomplete_or_failed_expert_is_not_training_data(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -147,6 +223,66 @@ class RecorderDatasetTests(unittest.TestCase):
 
 
 class ScheduleTests(unittest.TestCase):
+    def test_fixed_evaluations_match_for_control_and_imitation(self):
+        from pokemon_game.demonstrations.periodic_training import run_schedule
+
+        class FakeModel:
+            n_steps, n_envs, num_timesteps = 2, 2, 0
+            def learn(self, *, total_timesteps, reset_num_timesteps):
+                self.num_timesteps += total_timesteps
+            def save(self, path): pass
+
+        config = {'imitation_learning': {'enabled': False,
+            'initial_pretraining': {'enabled': False, 'epochs': 1},
+            'periodic_training': {'enabled': True, 'epochs': 1, 'interval_rollouts': 2},
+            'batch_size': 4, 'learning_rate': 0.001}}
+        evaluations = []
+        with tempfile.TemporaryDirectory() as directory:
+            run_schedule(FakeModel(), None, None, config, 5, Path(directory),
+                         evaluator=lambda model, rollout, phase: evaluations.append((rollout, phase)))
+        self.assertEqual(evaluations, [(0, 'before_ppo'), (2, 'after_update'),
+                                       (4, 'after_update'), (5, 'after_update')])
+
+    def test_rollout_progress_tracks_original_reward_and_episode_boundaries(self):
+        from pokemon_game.demonstrations.periodic_training import TrainingProgress
+        import time
+
+        class Model:
+            n_steps, n_envs, num_timesteps = 2, 2, 100
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            model = Model()
+            callback = TrainingProgress(root, total_rollouts=2, started=time.perf_counter(),
+                                        initial_steps=100, goal_enabled=True)
+            callback.model = model
+            callback.locals = {'rewards': [8.0, 2.0], 'dones': [False, False],
+                               'infos': [{'original_reward': 1.0}, {}]}
+            model.num_timesteps = 102
+            callback.on_step()
+            callback.locals = {'rewards': [5.0, 3.0], 'dones': [True, False],
+                               'infos': [{'original_reward': 0.5, 'goal_reached': True}, {}]}
+            model.num_timesteps = 104
+            callback.on_step()
+            callback.on_rollout_end()
+            first = json.loads((root / 'progress.jsonl').read_text().splitlines()[0])
+            self.assertEqual((first['rollout'], first['transitions_this_run']), (1, 4))
+            self.assertEqual(first['mean_original_return'], 1.5)
+            self.assertEqual(first['mean_episode_length'], 2)
+            self.assertEqual(first['goal_successes'], 1)
+            # The other worker's unfinished episode continues into the next chunk.
+            callback.locals = {'rewards': [0.0, 4.0], 'dones': [False, True], 'infos': [{}, {}]}
+            model.num_timesteps = 106
+            callback.on_step()
+            callback.locals = {'rewards': [0.0, 0.0], 'dones': [False, False], 'infos': [{}, {}]}
+            model.num_timesteps = 108
+            callback.on_step()
+            callback.on_rollout_end()
+            second = json.loads((root / 'progress.jsonl').read_text().splitlines()[1])
+            self.assertEqual(second['rollout'], 2)
+            self.assertEqual(second['completed_episodes'], 2)
+            self.assertEqual(second['mean_original_return'], (1.5 + 9.0) / 2)
+
     def test_imitation_occurs_only_between_complete_ppo_chunks(self):
         from pokemon_game.demonstrations.periodic_training import run_schedule
 

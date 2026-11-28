@@ -1,0 +1,1 @@
+{"rollout": 1, "timesteps": 16384, "wall_seconds": 19.372878705000403, "episodes": 32, "successes": 0, "first_success_timesteps": null, "original_reward_sum": 19.162499999999447, "shaping_reward_sum": 0.0, "missing_potential_steps": 0, "transitions": 16384}

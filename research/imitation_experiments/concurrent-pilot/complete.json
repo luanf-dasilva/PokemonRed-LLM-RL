@@ -1,0 +1,6 @@
+{
+  "rollouts": 20,
+  "training_timesteps": 10240,
+  "imitation_updates": 2,
+  "wall_seconds": 37.51303182400079
+}

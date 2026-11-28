@@ -1,0 +1,4 @@
+{"timesteps": 0, "elapsed_wall_seconds": 7.259622481999941, "save": "training_save", "success": false, "steps": 300, "original_return": 0.07500000000000001, "evaluation_wall_seconds": 0.6052662990005047}
+{"timesteps": 0, "elapsed_wall_seconds": 8.455409987999701, "save": "unseen_1", "success": false, "steps": 300, "original_return": 0.0125, "evaluation_wall_seconds": 1.1956588459997874}
+{"timesteps": 16384, "elapsed_wall_seconds": 28.087852118999763, "save": "training_save", "success": false, "steps": 300, "original_return": 0.0125, "evaluation_wall_seconds": 0.6823702490000869}
+{"timesteps": 16384, "elapsed_wall_seconds": 28.76047471899983, "save": "unseen_1", "success": false, "steps": 300, "original_return": 0.1375, "evaluation_wall_seconds": 0.6725325899997188}

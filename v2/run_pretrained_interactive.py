@@ -1,3 +1,4 @@
+import argparse
 import os
 from os.path import exists
 from pathlib import Path
@@ -44,6 +45,9 @@ def get_most_recent_zip_with_age(folder_path):
     return most_recent_zip, age_in_hours
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run a PPO checkpoint interactively.')
+    parser.add_argument('--checkpoint', type=Path, help='Checkpoint to load; defaults to the newest zip in runs/')
+    args = parser.parse_args()
 
     sess_path = Path(f'session_{str(uuid.uuid4())[:8]}')
     ep_length = 2**23
@@ -59,13 +63,16 @@ if __name__ == '__main__':
     env = make_env(0, env_config)() #SubprocVecEnv([make_env(i, env_config) for i in range(num_cpu)])
     
     #env_checker.check_env(env)
-    most_recent_checkpoint, time_since = get_most_recent_zip_with_age("runs")
-    if most_recent_checkpoint is not None:
-        file_name = most_recent_checkpoint
+    if args.checkpoint is not None:
+        if not args.checkpoint.is_file():
+            parser.error(f"Checkpoint not found: {args.checkpoint}")
+        file_name = str(args.checkpoint)
+        print(f"using checkpoint: {file_name}")
+    else:
+        file_name, time_since = get_most_recent_zip_with_age("runs")
+        if file_name is None:
+            parser.error("No checkpoint found in runs/; provide --checkpoint")
         print(f"using checkpoint: {file_name}, which is {time_since} hours old")
-    
-    # could optionally manually specify a checkpoint here
-    #file_name = "runs/poke_41943040_steps.zip"
     print('\nloading checkpoint')
     model = PPO.load(file_name, env=env, custom_objects={'lr_schedule': 0, 'clip_range': 0})
         

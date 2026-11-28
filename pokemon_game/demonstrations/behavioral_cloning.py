@@ -71,8 +71,8 @@ def clone(model, dataset, *, epochs=10, batch_size=512, learning_rate=1e-4, seed
 def validate_split(train, validation):
     if validation is None:
         return
-    if train.goals != validation.goals:
-        raise ValueError('Training and validation goals differ')
+    if not validation.goals <= train.goals:
+        raise ValueError('Validation includes a goal absent from training')
     if any(not session['start_sha256'] for session in train.sessions + validation.sessions):
         raise ValueError('Training and validation sessions require starting snapshot hashes')
     train_ids = {s['start_sha256'] for s in train.sessions if s['start_sha256']}
@@ -85,8 +85,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sessions', nargs='+', type=Path, required=True)
     parser.add_argument('--validation-sessions', nargs='*', type=Path, default=[])
-    parser.add_argument('--sources', nargs='+', default=['human', 'greedy_expert'])
+    parser.add_argument('--sources', nargs='+', default=['human', 'greedy_expert', 'dagger_expert'])
     parser.add_argument('--allow-mixed-goals', action='store_true')
+    parser.add_argument('--goal-conditioned', action='store_true',
+                        help='Add the recorded map goal to each observation')
     parser.add_argument('--checkpoint', type=Path)
     parser.add_argument('--rom', type=Path, default=ROOT / 'PokemonRed.gb')
     parser.add_argument('--start-state', type=Path, default=ROOT / 'init.state')
@@ -100,9 +102,11 @@ def main():
     rom, start_state = args.rom.resolve(), args.start_state.resolve()
     if output.exists():
         raise FileExistsError(f'Choose a new output directory: {output}')
-    train = DemonstrationDataset(args.sessions, args.sources, allow_mixed_goals=args.allow_mixed_goals)
+    train = DemonstrationDataset(args.sessions, args.sources, allow_mixed_goals=args.allow_mixed_goals,
+                                 goal_conditioned=args.goal_conditioned)
     validation = (DemonstrationDataset(args.validation_sessions, args.sources,
-                                        allow_mixed_goals=args.allow_mixed_goals)
+                                        allow_mixed_goals=args.allow_mixed_goals,
+                                        goal_conditioned=args.goal_conditioned)
                   if args.validation_sessions else None)
     validate_split(train, validation)
     torch.set_num_threads(1)
@@ -113,7 +117,8 @@ def main():
             model = PPO.load(str(args.checkpoint.resolve()), device='cpu')
         else:
             enter_v2()
-            env = make_env(rom, start_state, output / 'sessions')
+            env = make_env(rom, start_state, output / 'sessions',
+                           goal_maps=sorted(train.goals) if args.goal_conditioned else None)
             model = PPO('MultiInputPolicy', env, n_steps=16, batch_size=16, seed=args.seed,
                         device='cpu', verbose=0)
         before = accuracy(model, train, args.batch_size)
@@ -122,6 +127,7 @@ def main():
                        learning_rate=args.learning_rate, seed=args.seed)
         metrics = {'train_sessions': train.sessions, 'validation_sessions': validation.sessions if validation else [],
             'sources': args.sources, 'goals': list(train.goals), 'allow_mixed_goals': args.allow_mixed_goals,
+            'goal_conditioned': args.goal_conditioned,
             'train_transitions': len(train), 'validation_transitions': len(validation) if validation else 0,
             'epochs': args.epochs, 'batch_size': args.batch_size, 'learning_rate': args.learning_rate,
             'seed': args.seed, 'losses': losses, 'train_accuracy_before': before,

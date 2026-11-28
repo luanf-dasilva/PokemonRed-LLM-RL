@@ -406,7 +406,7 @@ best- and worst-return episode snapshots selected during the preceding rollout.
 It records the selected states and compares against an otherwise matched
 fixed-start control. The implementation, limitations, smoke results and run
 commands are described in the [curriculum experiment](research/ppo_experiments/curriculum-smoke/README.md).
-The curriculum is separate from the running fixed-goal shaping comparison.
+The curriculum is separate from the [completed fixed-goal shaping comparison](research/ppo_experiments/shaping-comparison/README.md).
 Optional fixed-goal runs exclude already-completed snapshots, and logs record
 starting and ending progress as well as transitions by reset source.
 
@@ -424,3 +424,6 @@ Offline behavioral cloning and optional imitation updates between PPO rollout
 cycles use the same recorded observations and actions. See the [demonstration
 experiment record](research/imitation_experiments/greedy-smoke/README.md) for
 controls, data format, reproduction commands, smoke results and limitations.
+Map-goal conditioning and learner-state corrective labels are described in the
+[corrective demonstration record](research/imitation_experiments/dagger-goal-conditioning/README.md).
+Their development tests have not yet produced a successful learned navigator.

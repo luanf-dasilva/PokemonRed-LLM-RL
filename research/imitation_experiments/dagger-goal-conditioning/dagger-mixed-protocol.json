@@ -1,0 +1,21 @@
+{
+  "checkpoint_sha256": "4c5c21671a66b1744c54859b8120bfd77083a3f90c62b2ca90cfce62307fdb4e",
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+  "graph_sha256": "d4ecc5b18c5a10ee9254902375c5b52fcb6efff99bc30d8389696af9af35afeb",
+  "goal_map_id": 1,
+  "goal_conditioned": false,
+  "rounds": 2,
+  "max_steps": 80,
+  "expert_probability": 0.5,
+  "seed": 0,
+  "max_nodes_per_discovery": 300,
+  "max_discoveries_per_round": 1,
+  "recovery_horizon": 6,
+  "initial_sessions": [
+    "greedy-pallet-viridian-v2"
+  ],
+  "expert": "one-step validation; bounded repeated-direction recovery and discovery on missing paths",
+  "semantics": "observation and successor follow behavior action; supervised label is expert action",
+  "limitation": "expert probes sample current emulator state and do not guarantee future validity"
+}

@@ -1,0 +1,98 @@
+[
+  {
+    "checkpoint": "initial",
+    "start": "pallet",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 1.1443686860002344,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "f753ea7eae7e3b9a69ad2008e217aa42ff9a7c7259c4634391550c5b5185a09d"
+  },
+  {
+    "checkpoint": "initial",
+    "start": "route1",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.08750000000000001,
+    "final_map_id": 12,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.9674646240000584,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "f753ea7eae7e3b9a69ad2008e217aa42ff9a7c7259c4634391550c5b5185a09d"
+  },
+  {
+    "checkpoint": "mid",
+    "start": "pallet",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.9020945970005414,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "3d25019433fe083b425d2ec2c4504f1fa5923bf886c5a5f461f642c43ac71998"
+  },
+  {
+    "checkpoint": "mid",
+    "start": "route1",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.08750000000000001,
+    "final_map_id": 12,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.7428775179996592,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "3d25019433fe083b425d2ec2c4504f1fa5923bf886c5a5f461f642c43ac71998"
+  },
+  {
+    "checkpoint": "final",
+    "start": "pallet",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.9913893190005183,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "c4744647a9ec5d3d68c0c1d3cfdf2eaa7eb10291173e3313729ede590bc327b1"
+  },
+  {
+    "checkpoint": "final",
+    "start": "route1",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.08750000000000001,
+    "final_map_id": 12,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.7243011239988846,
+    "action_counts": {
+      "3": 300
+    },
+    "checkpoint_sha256": "c4744647a9ec5d3d68c0c1d3cfdf2eaa7eb10291173e3313729ede590bc327b1"
+  }
+]

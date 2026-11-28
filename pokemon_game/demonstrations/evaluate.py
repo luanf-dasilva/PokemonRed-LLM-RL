@@ -9,6 +9,7 @@ import torch
 
 from pokemon_game.demonstrations.environment import ROOT, enter_v2, make_env
 from pokemon_game.emulator_simulator import BATTLE_FLAG
+from pokemon_game.goal_conditioning import GOAL_KEY
 from pokemon_game.state_encoder import MAP_ID
 
 
@@ -28,8 +29,11 @@ def main():
     output.mkdir(parents=True)
     torch.set_num_threads(1)
     model = PPO.load(str(checkpoint), device='cpu')
+    conditioned = GOAL_KEY in model.observation_space.spaces
     enter_v2()
-    env = make_env(rom, start, output / 'sessions', args.max_steps, args.goal_map_id)
+    env = make_env(rom, start, output / 'sessions', args.max_steps,
+                   target_map=None if conditioned else args.goal_map_id,
+                   goal_maps=[args.goal_map_id] if conditioned else None)
     try:
         observation, _ = env.reset()
         started = time.perf_counter()
@@ -47,7 +51,7 @@ def main():
             if terminated or truncated:
                 outcome = 'environment_ended'
                 break
-        result = {'outcome': outcome, 'goal_map_id': args.goal_map_id, 'actions': actions,
+        result = {'outcome': outcome, 'goal_map_id': args.goal_map_id, 'goal_conditioned': conditioned, 'actions': actions,
                   'actual_steps': len(actions), 'original_return': reward_total,
                   'final_map_id': int(env.unwrapped.pyboy.memory[MAP_ID]),
                   'battle_entered': battle_entered, 'simulated_actions': 0,

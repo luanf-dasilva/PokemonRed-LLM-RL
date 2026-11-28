@@ -24,4 +24,5 @@ imitation_learning:
   sources:
     human: true
     greedy_expert: true
+    dagger_expert: true
     successful_ppo: false

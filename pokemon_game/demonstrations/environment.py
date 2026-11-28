@@ -28,7 +28,7 @@ class StopAtMap(gym.Wrapper):
         return obs, reward, terminated or success, truncated and not success, info
 
 
-def make_env(rom, start_state, session_dir, max_steps=300, target_map=None):
+def make_env(rom, start_state, session_dir, max_steps=300, target_map=None, goal_maps=None):
     """Create a raw v2 env; callers must run from v2 for its events.json."""
     sys.path.insert(0, str(ROOT / 'v2'))
     from red_gym_env_v2 import RedGymEnv
@@ -41,6 +41,11 @@ def make_env(rom, start_state, session_dir, max_steps=300, target_map=None):
     config['session_path'].mkdir(parents=True, exist_ok=True)
     env = ManagedRedEnv(RedGymEnv(config))
     env.unwrapped.pyboy.set_emulation_speed(0)
+    if goal_maps is not None:
+        if target_map is not None:
+            raise ValueError('Choose fixed unconditioned or goal-conditioned navigation')
+        from pokemon_game.goal_conditioning import GoalConditionedMap
+        return GoalConditionedMap(env, goal_maps)
     return StopAtMap(env, target_map) if target_map is not None else env
 
 

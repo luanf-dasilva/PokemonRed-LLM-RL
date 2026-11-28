@@ -1,0 +1,42 @@
+{
+  "condition": "tile",
+  "beta": 1.0,
+  "potential": "tile",
+  "rewards": {
+    "level": true,
+    "opponent_level": true,
+    "death_penalty": true
+  },
+  "seed": 0,
+  "workers": 32,
+  "rollout_steps": 512,
+  "rollouts": 1,
+  "training_timesteps": 16384,
+  "batch_size": 512,
+  "epochs": 1,
+  "gamma": 0.997,
+  "learning_rate": 0.0003,
+  "ent_coef": 0.01,
+  "max_episode_steps": 300,
+  "goal": "Viridian City",
+  "termination": "goal map outside battle; otherwise time limit truncation",
+  "terminal_potential": 0,
+  "unknown_potential": 0,
+  "evaluation": "deterministic policy, one episode per save",
+  "eval_every_rollouts": 5,
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+  "eval_sha256": {
+    "training_save": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+    "unseen_1": "210e08a72fd86d4f3fe40b80b68653c76131dd9d0e386d8147ab3d45a69f5380"
+  },
+  "graph_sha256": "d4ecc5b18c5a10ee9254902375c5b52fcb6efff99bc30d8389696af9af35afeb",
+  "graph_construction_seconds": 15.884149915,
+  "graph_construction_cost_source": "user supplied, not measured in this run",
+  "potential_initialization_seconds": 0.0031401719998029876,
+  "device": "cpu",
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "numpy": "2.1.2"
+  }
+}

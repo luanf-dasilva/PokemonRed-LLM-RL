@@ -1,0 +1,2 @@
+{"timesteps": 0, "elapsed_wall_seconds": 7.504035226999804, "save": "training_save", "success": false, "steps": 300, "original_return": 0.07500000000000001, "evaluation_wall_seconds": 0.6298140879998755}
+{"timesteps": 16384, "elapsed_wall_seconds": 28.088767560000633, "save": "training_save", "success": false, "steps": 300, "original_return": 0.0125, "evaluation_wall_seconds": 0.6918527190000532}

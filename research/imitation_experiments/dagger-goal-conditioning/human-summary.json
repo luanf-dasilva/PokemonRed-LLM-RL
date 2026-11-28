@@ -1,0 +1,22 @@
+{
+  "source": "human",
+  "transitions": 266,
+  "goal_map_id": 1,
+  "goal_reached": true,
+  "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "mode_counts": {
+    "overworld": 84,
+    "wild_battle": 182
+  },
+  "action_counts": {
+    "1": 19,
+    "3": 68,
+    "2": 14,
+    "0": 2,
+    "6": 45,
+    "5": 2,
+    "4": 116
+  },
+  "note": "Metadata summary only; full human recording and emulator snapshots remain local."
+}

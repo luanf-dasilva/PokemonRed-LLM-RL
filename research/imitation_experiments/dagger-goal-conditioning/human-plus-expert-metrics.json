@@ -1,0 +1,63 @@
+{
+  "train_sessions": [
+    {
+      "path": "greedy-pallet-viridian-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 76,
+      "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+      "goal_map_id": 1
+    },
+    {
+      "path": "human-pallet-20261128",
+      "source": "human",
+      "outcome": "human_stopped",
+      "count": 266,
+      "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+      "goal_map_id": 1
+    }
+  ],
+  "validation_sessions": [
+    {
+      "path": "greedy-route1-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 59,
+      "start_sha256": "68fe8b2c3514a2b001388684596e6230e153ae2dce6696e95c8e7a17c038b599",
+      "goal_map_id": 1
+    }
+  ],
+  "sources": [
+    "human",
+    "greedy_expert",
+    "dagger_expert"
+  ],
+  "goals": [
+    1
+  ],
+  "allow_mixed_goals": false,
+  "goal_conditioned": false,
+  "train_transitions": 342,
+  "validation_transitions": 59,
+  "epochs": 10,
+  "batch_size": 64,
+  "learning_rate": 0.0001,
+  "seed": 0,
+  "losses": [
+    1.9393852530864246,
+    1.92051332945015,
+    1.8987061580022175,
+    1.8767694583413197,
+    1.8545614634340966,
+    1.8329880439747146,
+    1.811461453549346,
+    1.790429407393026,
+    1.7693219805321498,
+    1.7492054714794047
+  ],
+  "train_accuracy_before": 0.06140350877192982,
+  "train_accuracy_after": 0.6140350877192983,
+  "validation_accuracy_before": 0.15254237288135594,
+  "validation_accuracy_after": 0.576271186440678,
+  "checkpoint": null
+}

@@ -1,0 +1,62 @@
+{
+  "config": {
+    "training": {
+      "workers": 1,
+      "rollout_steps": 512,
+      "batch_size": 512,
+      "ppo_epochs": 1,
+      "gamma": 0.997,
+      "learning_rate": 0.0003,
+      "ent_coef": 0.01,
+      "rollouts": 20,
+      "max_episode_steps": 300,
+      "seed": 0
+    },
+    "imitation_learning": {
+      "enabled": true,
+      "initial_pretraining": {
+        "enabled": true,
+        "epochs": 10
+      },
+      "periodic_training": {
+        "enabled": true,
+        "interval_rollouts": 10,
+        "epochs": 3
+      },
+      "batch_size": 512,
+      "learning_rate": 0.0001,
+      "sources": {
+        "human": true,
+        "greedy_expert": true,
+        "successful_ppo": false
+      }
+    }
+  },
+  "goal_map_id": 1,
+  "demonstrations": [
+    {
+      "path": "greedy-pallet-viridian-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 76,
+      "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+      "goal_map_id": 1
+    }
+  ],
+  "validation": [
+    {
+      "path": "greedy-route1-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 59,
+      "start_sha256": "68fe8b2c3514a2b001388684596e6230e153ae2dce6696e95c8e7a17c038b599",
+      "goal_map_id": 1
+    }
+  ],
+  "allow_mixed_goals": false,
+  "demonstration_root": null,
+  "checkpoint": null,
+  "schedule": "cloning after completed PPO learn/update cycles; fresh rollouts follow",
+  "bc_optimizer": "separate Adam, reinitialized per cloning update",
+  "ppo_learning_rate_schedule": "constant; each PPO chunk calls learn separately"
+}

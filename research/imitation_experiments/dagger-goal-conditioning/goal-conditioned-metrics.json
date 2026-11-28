@@ -1,0 +1,82 @@
+{
+  "train_sessions": [
+    {
+      "path": "greedy-pallet-viridian-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 76,
+      "start_sha256": "a140f411e0180c6b1ee0a29394a00b94ab0660ed287cbfc92be84dfaa9b09582",
+      "goal_map_id": 1
+    },
+    {
+      "path": "greedy-reverse-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 43,
+      "start_sha256": "c65db7edd0f14e4a0ee33f5cf3598348d07f443d90aee30b0c18f15b94d06346",
+      "goal_map_id": 0
+    },
+    {
+      "path": "greedy-mart-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 28,
+      "start_sha256": "c65db7edd0f14e4a0ee33f5cf3598348d07f443d90aee30b0c18f15b94d06346",
+      "goal_map_id": 42
+    },
+    {
+      "path": "greedy-center-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 16,
+      "start_sha256": "c65db7edd0f14e4a0ee33f5cf3598348d07f443d90aee30b0c18f15b94d06346",
+      "goal_map_id": 41
+    }
+  ],
+  "validation_sessions": [
+    {
+      "path": "greedy-route1-v2",
+      "source": "greedy_expert",
+      "outcome": "goal_reached",
+      "count": 59,
+      "start_sha256": "68fe8b2c3514a2b001388684596e6230e153ae2dce6696e95c8e7a17c038b599",
+      "goal_map_id": 1
+    }
+  ],
+  "sources": [
+    "human",
+    "greedy_expert",
+    "dagger_expert"
+  ],
+  "goals": [
+    0,
+    1,
+    42,
+    41
+  ],
+  "allow_mixed_goals": false,
+  "goal_conditioned": true,
+  "train_transitions": 163,
+  "validation_transitions": 59,
+  "epochs": 10,
+  "batch_size": 64,
+  "learning_rate": 0.0001,
+  "seed": 0,
+  "losses": [
+    1.942405082696786,
+    1.9313110551951123,
+    1.9197786483296588,
+    1.9070507470815459,
+    1.89409123095998,
+    1.880899822785079,
+    1.8681090148680048,
+    1.8548785177476568,
+    1.8422766733754632,
+    1.829800617475451
+  ],
+  "train_accuracy_before": 0.09202453987730061,
+  "train_accuracy_after": 0.4601226993865031,
+  "validation_accuracy_before": 0.1864406779661017,
+  "validation_accuracy_after": 0.6101694915254238,
+  "checkpoint": null
+}

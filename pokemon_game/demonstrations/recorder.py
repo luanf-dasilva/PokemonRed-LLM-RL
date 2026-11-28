@@ -36,7 +36,7 @@ class DemonstrationRecorder(gym.Wrapper):
     """Persist each transition atomically; preserve episode boundaries and rewards."""
     def __init__(self, env, output, lookups, source, *, rom_sha256=None, start_sha256=None):
         super().__init__(env)
-        if source not in ('human', 'greedy_expert', 'successful_ppo'):
+        if source not in ('human', 'greedy_expert', 'dagger_expert', 'successful_ppo'):
             raise ValueError('Unknown demonstration source')
         self.output = Path(output).resolve()
         self.output.mkdir(parents=True, exist_ok=False)
@@ -86,12 +86,21 @@ class DemonstrationRecorder(gym.Wrapper):
         return obs, info
 
     def step(self, action):
+        return self._step(action, action, 'demonstrator')
+
+    def step_labeled(self, behavior_action, expert_action, behavior_source='learner'):
+        """Record an expert label while executing the actual roll-in action."""
+        if self.source != 'dagger_expert':
+            raise ValueError('Separate behavior and expert actions require a DAgger session')
+        return self._step(behavior_action, expert_action, behavior_source)
+
+    def _step(self, action, label, behavior_source):
         if self.manifest['outcome'] != 'recording':
             raise RuntimeError('Cannot modify a finalized demonstration')
         if self.obs is None:
             raise RuntimeError('Reset required before recording')
-        if not self.action_space.contains(action):
-            raise ValueError('Invalid recorded action')
+        if not self.action_space.contains(action) or not self.action_space.contains(label):
+            raise ValueError('Invalid behavior or expert action')
         before, state_before, components_before = self.obs, self.state, self.components
         next_obs, reward, terminated, truncated, info = self.env.step(action)
         after, state_after, components_after = copy_obs(next_obs), self._state(), self._components()
@@ -99,12 +108,13 @@ class DemonstrationRecorder(gym.Wrapper):
         delta = {key: components_after.get(key, 0.0) - components_before.get(key, 0.0)
                  for key in set(components_before) | set(components_after)}
         metadata = {'episode': self.episode, 'episode_step': self.episode_step,
-            'source': self.source, 'action': int(action), 'reward': original,
+            'source': self.source, 'action': int(label), 'behavior_action': int(action),
+            'behavior_source': behavior_source, 'reward': original,
             'reward_components': delta, 'terminated': bool(terminated), 'truncated': bool(truncated),
             'state': state_before, 'next_state': state_after, 'goal_reached': bool(info.get('goal_reached', False))}
         arrays = {**{'obs__' + key: value for key, value in before.items()},
                   **{'next__' + key: value for key, value in after.items()},
-                  'action': np.array(int(action), dtype=np.int64),
+                  'action': np.array(int(label), dtype=np.int64),
                   'metadata': np.array(json.dumps(metadata, allow_nan=False))}
         buffer = io.BytesIO()
         np.savez_compressed(buffer, **arrays)

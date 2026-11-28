@@ -90,3 +90,11 @@ hyperparameters and should not be used with such a schedule. A one-worker,
 then PPO; `periodic-schedule.jsonl` records the order. It does not establish a
 training improvement. No long imitation run was started alongside the ongoing
 shaping matrix.
+
+The trainer prints a line for each collected rollout, showing transitions,
+elapsed time and statistics for up to the last 100 completed training
+episodes. When a fixed goal is enabled, it also shows the number reaching the
+goal. The line appears before that rollout's PPO update. Imitation phases
+print their action agreement, loss and checkpoint name; completed PPO chunks
+print their checkpoint name. Per-rollout statistics are also saved in
+`progress.jsonl`, and the existing `schedule.jsonl` remains available.

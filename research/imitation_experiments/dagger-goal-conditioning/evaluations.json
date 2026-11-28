@@ -1,0 +1,106 @@
+[
+  {
+    "name": "dagger-recovery-eval-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.6898504460004915,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "dagger-mixed-eval-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "goal_conditioned": false,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.6672156960012217,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "bc-human-plus-eval-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "goal_conditioned": false,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.6801179729991418,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "goal-eval-pallet-viridian-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 1,
+    "goal_conditioned": true,
+    "actual_steps": 300,
+    "original_return": 0.125,
+    "final_map_id": 40,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.7815943739988143,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "goal-eval-viridian-pallet-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 0,
+    "goal_conditioned": true,
+    "actual_steps": 300,
+    "original_return": 0.0625,
+    "final_map_id": 1,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.7136330060020555,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "goal-eval-viridian-mart-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 42,
+    "goal_conditioned": true,
+    "actual_steps": 300,
+    "original_return": 0.0625,
+    "final_map_id": 1,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.7105544490004831,
+    "action_counts": {
+      "3": 300
+    }
+  },
+  {
+    "name": "goal-eval-viridian-center-20261128",
+    "outcome": "environment_ended",
+    "goal_map_id": 41,
+    "goal_conditioned": true,
+    "actual_steps": 300,
+    "original_return": 0.0625,
+    "final_map_id": 1,
+    "battle_entered": false,
+    "simulated_actions": 0,
+    "wall_seconds": 0.6982283409997763,
+    "action_counts": {
+      "3": 300
+    }
+  }
+]

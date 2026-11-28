@@ -1,0 +1,41 @@
+{
+  "condition": "control",
+  "seed": 0,
+  "workers": 4,
+  "roles": [
+    "initial",
+    "initial",
+    "initial",
+    "initial"
+  ],
+  "rollout_steps": 32,
+  "rollouts": 4,
+  "total_timesteps": 512,
+  "batch_size": 32,
+  "epochs": 1,
+  "gamma": 0.997,
+  "learning_rate": 0.0003,
+  "ent_coef": 0.01,
+  "episode_limit": 16,
+  "policy": "MultiInputPolicy from scratch",
+  "base_rewards": {
+    "level": true,
+    "opponent_level": true,
+    "death_penalty": true
+  },
+  "rom_sha256": "5ca7ba01642a3b27b0cc0b5349b52792795b62d3ed977e98a09390659af96b7b",
+  "initial_sha256": "ef978b1668d2fad22a7b809a45fec37f3dd3fc5ef37d996f65b4ac93041afcb8",
+  "eval_sha256": {
+    "initial": "ef978b1668d2fad22a7b809a45fec37f3dd3fc5ef37d996f65b4ac93041afcb8"
+  },
+  "selection": "highest and lowest original episode return among eligible completions in the last rollout",
+  "initial_fallback": "before first publication and on invalid/missing/corrupt snapshots",
+  "eligibility": "finite return, snapshot bytes, valid party count and battle flag; not proof of recoverability",
+  "snapshot_updates": "published at rollout boundary; adopted by each worker at its next reset",
+  "evaluation": "one deterministic episode per fixed save; not an independent success-rate estimate",
+  "source_sha256": {
+    "pokemon_game/adaptive_curriculum.py": "4950f278ebb418409f9ea3d41f0cd58cdad84920e46a9ec0323334cd3cf17dd7",
+    "pokemon_game/curriculum_experiment.py": "22b1eb0cf0d0fc255e339b64730e9607f54970aa8d48c3eaaffa50ae6d8f38e0",
+    "v2/red_gym_env_v2.py": "3c90db62956fa8b986cc88c90fe601670d13b9a8ecaf805d860d7a4ca9a2884a"
+  }
+}

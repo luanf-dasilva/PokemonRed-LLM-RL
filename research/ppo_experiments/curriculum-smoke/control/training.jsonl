@@ -1,0 +1,4 @@
+{"rollout": 1, "timesteps": 128, "elapsed_wall_seconds": 3.6747960449993116, "completed_episodes": 8, "rollout_episodes": 8, "published": null}
+{"rollout": 2, "timesteps": 256, "elapsed_wall_seconds": 4.080905339998935, "completed_episodes": 16, "rollout_episodes": 8, "published": null}
+{"rollout": 3, "timesteps": 384, "elapsed_wall_seconds": 4.57766439399893, "completed_episodes": 24, "rollout_episodes": 8, "published": null}
+{"rollout": 4, "timesteps": 512, "elapsed_wall_seconds": 5.02210434799963, "completed_episodes": 32, "rollout_episodes": 8, "published": null}

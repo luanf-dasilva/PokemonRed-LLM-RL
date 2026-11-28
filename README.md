@@ -398,3 +398,12 @@ have zero potential. The graph is fixed throughout each training run and its
 ROM hash must match. This adds shaping to the existing environment reward; it
 does not make a dynamic LLM goal policy-invariant or establish any PPO training
 improvement. Omit the section for unchanged baseline training.
+
+## Adaptive starting-state curriculum
+
+An independent PPO runner can reset workers from the initial save or from the
+best- and worst-return episode snapshots selected during the preceding rollout.
+It records the selected states and compares against an otherwise matched
+fixed-start control. The implementation, limitations, smoke results and run
+commands are described in the [curriculum experiment](research/ppo_experiments/curriculum-smoke/README.md).
+The curriculum is separate from the running fixed-goal shaping comparison.
